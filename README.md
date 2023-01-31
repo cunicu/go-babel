@@ -1,4 +1,6 @@
-# go-babel
+<p align="center">
+    <img width="300" src="docs/go_babel_logo.svg" >/
+</p>
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/stv0g/go-babel/build?style=flat-square)](https://github.com/stv0g/go-babel/actions)
 [![goreportcard](https://goreportcard.com/badge/github.com/stv0g/go-babel?style=flat-square)](https://goreportcard.com/report/github.com/stv0g/go-babel)
@@ -10,8 +12,8 @@ go-babel is an (incomplete) implementation of the [Babel routing protocol](https
 
 ## References
 
-- https://www.irif.fr/~jch/software/babel/
-- https://www.youtube.com/watch?v=Mflw4BuksHQ
+- <https://www.irif.fr/~jch/software/babel/>
+- <https://www.youtube.com/watch?v=Mflw4BuksHQ>
 
 ## Authors
 
