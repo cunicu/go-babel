@@ -1,0 +1,27 @@
+name: Test
+
+on:
+- push
+- pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+        cache: true
+
+    - name: Install dependencies
+      run: |
+        go install github.com/onsi/ginkgo/v2/ginkgo@v2.8.0
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: ginkgo run -r --procs=4 --compilers=4 --randomize-all --randomize-suites --keep-going --cover --coverprofile=cover.profile --race --trace --json-report=report.json --timeout=10m
