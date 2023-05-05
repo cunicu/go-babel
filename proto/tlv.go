@@ -73,7 +73,7 @@ const (
 // https://www.iana.org/assignments/babel/babel.xhtml#flags
 const (
 	FlagUpdatePrefix   uint8 = 0x80
-	FlagUpdateRouterID       = 0x40
+	FlagUpdateRouterID uint8 = 0x40
 )
 
 // 4.6.1. Pad1
