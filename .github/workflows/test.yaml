@@ -1,4 +1,3 @@
-
 # SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
 # SPDX-License-Identifier: Apache-2.0
 
@@ -17,8 +16,8 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.19
-        cache: true
+        go-version-file: go.mod
+        check-latest: true
 
     - name: Install dependencies
       run: |
@@ -28,4 +27,16 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: ginkgo run -r --procs=4 --compilers=4 --randomize-all --randomize-suites --keep-going --cover --coverprofile=cover.profile --race --trace --json-report=report.json --timeout=10m
+      run: ginkgo run
+        -r
+        --procs=4
+        --compilers=4
+        --randomize-all
+        --randomize-suites
+        --keep-going
+        --cover
+        --coverprofile=cover.profile
+        --race
+        --trace
+        --json-report=report.json
+        --timeout=10m
