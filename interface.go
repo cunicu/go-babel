@@ -255,6 +255,9 @@ func (i *Interface) sendValuesWithJitter(maxDelay time.Duration, vs ...proto.Val
 	return nil
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func (i *Interface) findLinkLocalAddress() (net.IP, error) {
 	addrs, err := i.Addrs()
 	if err != nil {

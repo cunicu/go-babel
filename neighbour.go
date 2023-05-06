@@ -129,9 +129,11 @@ func (n *Neighbour) onSeqnoRequest(sr *proto.SeqnoRequest) {
 }
 
 func (n *Neighbour) onAcknowledgmentRequest(ar *proto.AcknowledgmentRequest) {
-	n.sendValuesWithJitter(ar.Interval, &proto.Acknowledgment{
+	if err := n.sendValuesWithJitter(ar.Interval, &proto.Acknowledgment{
 		Opaque: ar.Opaque,
-	})
+	}); err != nil {
+		n.intf.logger.Error("Failed to send acknowledgement: %s", err)
+	}
 }
 
 func (n *Neighbour) onAcknowledgment(a *proto.Acknowledgment) {
@@ -164,6 +166,9 @@ func (n *Neighbour) sendValues(vs ...proto.Value) error {
 	return n.sendValuesWithJitter(n.intf.speaker.config.MulticastHelloInterval/2, vs...)
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func (n *Neighbour) sendUrgentValues(vs ...proto.Value) error {
 	return n.sendValuesWithJitter(n.intf.speaker.config.UrgentTimeout, vs...)
 }
@@ -189,6 +194,9 @@ func (n *Neighbour) sendUnicastHello() error {
 	return n.sendValues(hello)
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func (n *Neighbour) sendIHU() error {
 	ihu := &proto.IHU{
 		RxCost:   n.RxCost,

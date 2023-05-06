@@ -37,6 +37,8 @@ func (c *SpeakerConfig) SetDefaults() {
 }
 
 type Speaker struct {
+	// TODO: Use field
+	//nolint:unused
 	seqNo uint16
 
 	Interfaces InterfaceTable

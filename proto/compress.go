@@ -45,6 +45,9 @@ func addressFamilyFromAddressEncoding(ae AddressEncoding) AddressFamily {
 	}
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func decompressIPv4(b []byte, o int, p netip.Addr) netip.Addr {
 	c := [4]byte{}
 
@@ -60,6 +63,9 @@ func decompressIPv4(b []byte, o int, p netip.Addr) netip.Addr {
 	return netip.AddrFrom4(c)
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func decompressIPv6(b []byte, o int, p netip.Addr) netip.Addr {
 	c := [16]byte{}
 
@@ -75,6 +81,9 @@ func decompressIPv6(b []byte, o int, p netip.Addr) netip.Addr {
 	return netip.AddrFrom16(c)
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func compressIPv4(b []byte, a netip.Addr, p netip.Addr) int {
 	r := a.As4()
 	s := p.As4()
@@ -87,6 +96,9 @@ func compressIPv4(b []byte, a netip.Addr, p netip.Addr) int {
 	return o
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func compressIPv6(b []byte, a netip.Addr, p netip.Addr) int {
 	r := a.As16()
 	s := p.As16()

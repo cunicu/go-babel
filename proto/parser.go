@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-type uint8Offset int
-
 // Parser implements the protocol en/decoding of Babel packets
 // It keeps internal state which is required for compressing
 // prefixes and other details for Update TLVs.
@@ -546,6 +544,9 @@ func (p *Parser) pad1(b []byte) ([]byte, *Pad1, error) {
 	return b, &Pad1{}, nil
 }
 
+// TODO: Use function
+//
+//nolint:unused
 func (p *Parser) appendPad1(b []byte, v *Pad1) []byte {
 	return b
 }
