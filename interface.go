@@ -322,21 +322,3 @@ func (i *Interface) createConn() (*ipv6.PacketConn, error) {
 
 	return pktConn, nil
 }
-
-type InterfaceTable Map[int, *Interface]
-
-func NewInterfaceTable() InterfaceTable {
-	return InterfaceTable(NewMap[int, *Interface]())
-}
-
-func (t *InterfaceTable) Lookup(idx int) (*Interface, bool) {
-	return (*Map[int, *Interface])(t).Lookup(idx)
-}
-
-func (t *InterfaceTable) Insert(i *Interface) {
-	(*Map[int, *Interface])(t).Insert(i.Index, i)
-}
-
-func (t *InterfaceTable) Foreach(cb func(int, *Interface) error) error {
-	return (*Map[int, *Interface])(t).Foreach(cb)
-}

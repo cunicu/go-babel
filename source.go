@@ -19,24 +19,3 @@ type Source struct {
 	Metric int
 	SeqNo  uint16
 }
-
-type sourceKey struct {
-	Prefix   netip.Prefix
-	RouterID proto.RouterID
-}
-
-type SourceTable Map[sourceKey, *Source]
-
-func (t *SourceTable) Lookup(pfx netip.Prefix, rid proto.RouterID) (*Source, bool) {
-	return (*Map[sourceKey, *Source])(t).Lookup(sourceKey{
-		Prefix:   pfx,
-		RouterID: rid,
-	})
-}
-
-func (t *SourceTable) Insert(s *Source) {
-	(*Map[sourceKey, *Source])(t).Insert(sourceKey{
-		s.Prefix,
-		s.RouterID,
-	}, s)
-}

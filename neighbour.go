@@ -230,21 +230,3 @@ func (n *Neighbour) updateCosts() {
 		n.Cost = n.TxCost
 	}
 }
-
-type NeighbourTable Map[proto.Address, *Neighbour]
-
-func NewNeighbourTable() NeighbourTable {
-	return NeighbourTable(NewMap[proto.Address, *Neighbour]())
-}
-
-func (t *NeighbourTable) Lookup(a proto.Address) (*Neighbour, bool) {
-	return (*Map[proto.Address, *Neighbour])(t).Lookup(a)
-}
-
-func (t *NeighbourTable) Insert(n *Neighbour) {
-	(*Map[proto.Address, *Neighbour])(t).Insert(n.Address, n)
-}
-
-func (t *NeighbourTable) Foreach(cb func(proto.Address, *Neighbour) error) error {
-	return (*Map[proto.Address, *Neighbour])(t).Foreach(cb)
-}
