@@ -4,6 +4,7 @@
 package proto
 
 import (
+	"math"
 	"net/netip"
 	"time"
 )
@@ -48,6 +49,10 @@ const (
 	TypePC                                     // RFC8967
 	TypeChallengeRequest                       // RFC8967
 	TypeChallengeReply                         // RFC8967
+
+	// TypeInvalid is specified by any RFC and just used internal to
+	// represent an invalid type
+	TypeInvalid ValueType = math.MaxUint8
 )
 
 // Babel Sub-TLV Types
@@ -183,4 +188,11 @@ type TimestampHello struct {
 type TimestampIHU struct {
 	Origin  Timestamp
 	Receive Timestamp
+}
+
+func IsUrgent(v Value) bool {
+	switch v.(type) {
+	default:
+		return false
+	}
 }

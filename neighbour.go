@@ -4,11 +4,15 @@
 package babel
 
 import (
-	"log"
+	"fmt"
 	"math"
-	"math/rand"
+	"net"
 	"time"
 
+	"github.com/stv0g/go-babel/internal/deadline"
+	"github.com/stv0g/go-babel/internal/history"
+	netx "github.com/stv0g/go-babel/internal/net"
+	"github.com/stv0g/go-babel/internal/queue"
 	"github.com/stv0g/go-babel/proto"
 	"golang.org/x/exp/slog"
 )
@@ -17,9 +21,8 @@ import (
 // https://datatracker.ietf.org/doc/html/rfc8966#section-3.2.4
 
 type helloState struct {
-	history       HistoryVector
+	history       history.Vector
 	expectedSeqNo proto.SequenceNumber
-	ticker        *time.Ticker
 }
 
 func (s *helloState) Update(v *proto.Hello) {
@@ -27,9 +30,9 @@ func (s *helloState) Update(v *proto.Hello) {
 
 	s.expectedSeqNo = v.Seqno + 1
 
-	if v.Interval > 0 {
-		s.ticker.Reset(v.Interval * 3 / 2)
-	}
+	// if v.Interval > 0 {
+	// 	s.ticker.Reset(v.Interval * 3 / 2)
+	// }
 }
 
 type Neighbour struct {
@@ -48,36 +51,44 @@ type Neighbour struct {
 	helloMulticast helloState
 
 	outgoingUnicastHelloSeqNo proto.SequenceNumber
-	ihuTimeout                Deadline
-	nextSendTimer             Deadline
-	pendingValues             []proto.Value
+
+	ihuTicker   *time.Ticker
+	helloTicker *time.Ticker
+	ihuTimeout  deadline.Deadline
+
+	queue *queue.Queue
 }
 
 func (i *Interface) NewNeighbour(addr proto.Address) (*Neighbour, error) {
+	neighbourAddr := &net.UDPAddr{
+		IP:   addr.AsSlice(),
+		Port: Port,
+	}
+
 	n := &Neighbour{
 		Address: addr,
 
-		ihuTimeout: NewDeadline(),
-		intf:       i,
+		queue: queue.NewQueue(i.MTU, &netx.PacketConnWriter{
+			PacketConn: i.speaker.conn.PacketConn,
+			Dest:       neighbourAddr,
+		}),
+
+		ihuTimeout: deadline.NewDeadline(),
+		ihuTicker:  time.NewTicker(i.speaker.config.IHUInterval),
+
+		intf: i,
 
 		logger: i.logger,
 	}
 
+	// Only create unicast hello ticker, if its enabled.
+	// Otherwise, create a stopped ticker.
 	if interval := n.intf.speaker.config.UnicastHelloInterval; interval > 0 {
-		n.helloUnicast.ticker = time.NewTicker(interval)
+		n.helloTicker = time.NewTicker(interval)
 	} else {
-		n.helloUnicast.ticker = time.NewTicker(math.MaxInt64)
-		n.helloUnicast.ticker.Stop()
+		n.helloTicker = time.NewTicker(math.MaxInt64)
+		n.helloTicker.Stop()
 	}
-
-	if interval := n.intf.speaker.config.MulticastHelloInterval; interval > 0 {
-		n.helloMulticast.ticker = time.NewTicker(interval)
-	} else {
-		n.helloMulticast.ticker = time.NewTicker(math.MaxInt64)
-		n.helloMulticast.ticker.Stop()
-	}
-
-	n.nextSendTimer = NewDeadline()
 
 	go n.runTimers()
 
@@ -87,22 +98,18 @@ func (i *Interface) NewNeighbour(addr proto.Address) (*Neighbour, error) {
 func (n *Neighbour) runTimers() {
 	for {
 		select {
-		case <-n.helloUnicast.ticker.C:
+		case <-n.helloTicker.C:
 			if err := n.sendUnicastHello(); err != nil {
 				n.logger.Error("Failed to send Hello", err)
 			}
 
+		case <-n.ihuTicker.C:
+			// if err := n.sendIHU(); err != nil {
+			// 	n.logger.Error("Failed to send IHU", err)
+			// }
+
 		case <-n.ihuTimeout.C:
 			n.TxCost = 0xFFFF
-
-		case <-n.nextSendTimer.C:
-			if err := n.sendPacket(&proto.Packet{
-				Body: n.pendingValues,
-			}); err != nil {
-				log.Printf("Failed to send packet: %s", err)
-			} else {
-				n.pendingValues = nil
-			}
 		}
 	}
 }
@@ -134,17 +141,15 @@ func (n *Neighbour) onSeqnoRequest(sr *proto.SeqnoRequest) {
 }
 
 func (n *Neighbour) onAcknowledgmentRequest(ar *proto.AcknowledgmentRequest) {
-	if err := n.sendValuesWithJitter(ar.Interval, &proto.Acknowledgment{
-		Opaque: ar.Opaque,
-	}); err != nil {
-		n.intf.logger.Error("Failed to send acknowledgement: %s", err)
+	if err := n.sendAcknowledgment(ar.Opaque, ar.Interval*3/5); err != nil {
+		n.logger.Error("Failed to send acknowledgement", err)
 	}
 }
 
 func (n *Neighbour) onAcknowledgment(a *proto.Acknowledgment) {
 }
 
-func (n *Neighbour) onPacket(pkt *proto.Packet) error {
+func (n *Neighbour) onPacket(pkt *proto.Packet, srcAddr, dstAddr proto.Address) error {
 	for _, value := range pkt.Body {
 		n.logger.Debug("Received value",
 			slog.String("type", fmt.Sprintf("%T", value)))
@@ -167,25 +172,7 @@ func (n *Neighbour) onPacket(pkt *proto.Packet) error {
 		}
 	}
 
-	return nil
-}
-
-func (n *Neighbour) sendValues(vs ...proto.Value) error {
-	return n.sendValuesWithJitter(n.intf.speaker.config.MulticastHelloInterval/2, vs...)
-}
-
-// TODO: Use function
-//
-//nolint:unused
-func (n *Neighbour) sendUrgentValues(vs ...proto.Value) error {
-	return n.sendValuesWithJitter(n.intf.speaker.config.UrgentTimeout, vs...)
-}
-
-func (n *Neighbour) sendValuesWithJitter(maxDelay time.Duration, vs ...proto.Value) error {
-	n.pendingValues = append(n.pendingValues, vs...)
-
-	jitter := time.Nanosecond * time.Duration(rand.Float64()*float64(maxDelay))
-	n.nextSendTimer.Reset(jitter)
+	// TODO: Handle trailer
 
 	return nil
 }
@@ -193,30 +180,48 @@ func (n *Neighbour) sendValuesWithJitter(maxDelay time.Duration, vs ...proto.Val
 func (n *Neighbour) sendUnicastHello() error {
 	n.outgoingUnicastHelloSeqNo++
 
-	hello := &proto.Hello{
+	n.queue.SendValue(&proto.Hello{
 		Flags:    proto.FlagHelloUnicast,
 		Seqno:    n.outgoingUnicastHelloSeqNo,
 		Interval: n.intf.speaker.config.UnicastHelloInterval,
-	}
+	}, n.intf.speaker.config.UnicastHelloInterval*3/5)
 
-	return n.sendValues(hello)
+	return nil
+}
+
+// TODO: Use function
+func (n *Neighbour) sendUnicastRouteRequest() error { //nolint:unused
+	n.queue.SendValue(&proto.RouteRequest{}, n.intf.speaker.config.MulticastHelloInterval/2)
+
+	return nil
+}
+
+// TODO: Use function
+func (n *Neighbour) sendUnicastSeqnoRequest() error { //nolint:unused
+	n.queue.SendValue(&proto.SeqnoRequest{}, n.intf.speaker.config.MulticastHelloInterval/2)
+
+	return nil
 }
 
 // TODO: Use function
 //
 //nolint:unused
 func (n *Neighbour) sendIHU() error {
-	ihu := &proto.IHU{
+	n.queue.SendValue(&proto.IHU{
 		RxCost:   n.RxCost,
 		Address:  n.Address,
 		Interval: n.intf.speaker.config.IHUInterval,
-	}
+	}, n.intf.speaker.config.IHUInterval*3/5)
 
-	return n.sendValues(ihu)
+	return nil
 }
 
-func (n *Neighbour) sendPacket(pkt *proto.Packet) error {
-	return n.intf.sendPacket(pkt, n.Address)
+func (n *Neighbour) sendAcknowledgment(opaque uint16, interval time.Duration) error {
+	n.queue.SendValue(&proto.Acknowledgment{
+		Opaque: opaque,
+	}, interval*2/3)
+
+	return nil
 }
 
 // A.2.1. k-out-of-j

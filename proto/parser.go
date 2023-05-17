@@ -38,7 +38,7 @@ func (p *Parser) Reset() {
 // This should be used for pre-allocate an appropriately sized
 // buffer.
 func (p *Parser) PacketLength(pkt *Packet) uint16 {
-	return PacketHeaderLength + p.valuesLength(pkt.Body) + p.valuesLength(pkt.Trailer)
+	return PacketHeaderLength + p.ValuesLength(pkt.Body) + p.ValuesLength(pkt.Trailer)
 }
 
 // Packet attempts to decode a packet from the provided buffer.
@@ -111,8 +111,8 @@ func (p *Parser) AppendPacket(b []byte, pkt *Packet) []byte {
 	b = p.appendUint8(b, PacketHeaderMagic)
 	b = p.appendUint8(b, PacketHeaderVersion)
 	b = p.appendUint16(b, 0) // Placeholder: length
-	b = p.appendValues(b, pkt.Body)
-	b = p.appendValues(b, pkt.Trailer)
+	b = p.AppendValues(b, pkt.Body)
+	b = p.AppendValues(b, pkt.Trailer)
 
 	// Fill in body length
 	bodyLength := len(b) - o - PacketHeaderLength
@@ -171,8 +171,8 @@ func (p *Parser) appendUint64(b []byte, v uint64) []byte {
 // TLV Values
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.3
 
-// valueLength returns the number of octets of an TLV including the type / length fields.
-func (p *Parser) valueLength(v Value) (l uint8) {
+// ValueLength returns the number of octets of an TLV including the type / length fields.
+func (p *Parser) ValueLength(v Value) (l uint8) {
 	l = ValueHeaderLength
 
 	switch v := v.(type) {
@@ -263,7 +263,7 @@ func (p *Parser) valuePayload(t ValueType, b []byte) ([]byte, Value, error) {
 	}
 }
 
-func (p *Parser) appendValue(b []byte, v Value) []byte {
+func (p *Parser) AppendValue(b []byte, v Value) []byte {
 	switch v := v.(type) {
 	case *Pad1:
 		return p.appendUint8(b, uint8(TypePad1))
@@ -345,10 +345,10 @@ func (p *Parser) appendValueHeader(b []byte, t ValueType, cb func([]byte) []byte
 	return b
 }
 
-func (p *Parser) valuesLength(vs []Value) uint16 {
+func (p *Parser) ValuesLength(vs []Value) uint16 {
 	length := uint16(0)
 	for _, v := range vs {
-		length += uint16(p.valueLength(v))
+		length += uint16(p.ValueLength(v))
 	}
 	return length
 }
@@ -391,9 +391,9 @@ func (p *Parser) forEachSubValue(b []byte, cb func(t ValueType, b []byte) ([]byt
 	})
 }
 
-func (p *Parser) appendValues(b []byte, vs []Value) []byte {
+func (p *Parser) AppendValues(b []byte, vs []Value) []byte {
 	for _, v := range vs {
-		b = p.appendValue(b, v)
+		b = p.AppendValue(b, v)
 	}
 
 	return b

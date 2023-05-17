@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
 // SPDX-License-Identifier: Apache-2.0
 
-package babel
+// Package history implements a history vector keep track of received Hellos
+package history
 
 import (
 	"math/bits"
@@ -9,7 +10,7 @@ import (
 	"github.com/stv0g/go-babel/proto"
 )
 
-type HistoryVector uint64
+type Vector uint64
 
 func distance(a, b proto.SequenceNumber) uint16 {
 	if a > b {
@@ -21,7 +22,7 @@ func distance(a, b proto.SequenceNumber) uint16 {
 
 // A.1. Maintaining Hello History
 // See: https://datatracker.ietf.org/doc/html/rfc8966#section-a.1
-func (v *HistoryVector) Update(nr, ne proto.SequenceNumber) {
+func (v *Vector) Update(nr, ne proto.SequenceNumber) {
 	if distance(nr, ne) > 64 {
 		*v = 0
 	} else if nr < ne {
@@ -36,7 +37,7 @@ func (v *HistoryVector) Update(nr, ne proto.SequenceNumber) {
 
 // A.2.1. k-out-of-j
 // See: https://datatracker.ietf.org/doc/html/rfc8966#section-a.2.1
-func (v *HistoryVector) OutOf(k, j, C uint16) uint16 {
+func (v *Vector) OutOf(k, j, C uint16) uint16 {
 	if bits.OnesCount64(uint64(*v)&((1<<j)-1)) >= int(k) {
 		return C
 	} else {

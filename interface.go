@@ -6,12 +6,11 @@ package babel
 import (
 	"errors"
 	"fmt"
-	"log"
-	"math/rand"
 	"net"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
+	netx "github.com/stv0g/go-babel/internal/net"
+	"github.com/stv0g/go-babel/internal/queue"
 	"github.com/stv0g/go-babel/proto"
 	"golang.org/x/exp/slog"
 )
@@ -35,16 +34,16 @@ const (
 type Interface struct {
 	*net.Interface
 
+	multicast bool
+
 	Neighbours NeighbourTable
 
 	helloMulticastSeqNo proto.SequenceNumber
 	helloMulticastTimer *time.Ticker
 	periodicUpdateTimer *time.Ticker
 
-	speaker       *Speaker
-	conn          *ipv6.PacketConn
-	nextSendTimer Deadline
-	pendingValues []proto.Value
+	queue   *queue.Queue
+	speaker *Speaker
 
 	logger *slog.Logger
 }
@@ -58,42 +57,35 @@ func (s *Speaker) newInterface(index int) (*Interface, error) {
 	i := &Interface{
 		Interface: intf,
 
+		multicast: s.config.Multicast,
+
 		Neighbours: NewNeighbourTable(),
 
-		nextSendTimer: NewDeadline(),
-		speaker:       s,
+		speaker: s,
 		logger: s.config.Logger.With(
 			slog.String("intf", intf.Name)),
 	}
 
-	if i.conn, err = i.createConn(); err != nil {
-		return nil, fmt.Errorf("failed to create socket: %w", err)
-	}
-
-	if s.config.Multicast {
+	if i.multicast {
 		multicastAddr := &net.UDPAddr{
-			IP: MulticastGroupIPv6.AsSlice(),
+			IP:   MulticastGroupIPv6.AsSlice(),
+			Port: Port,
 		}
 
-		if err := i.conn.SetMulticastInterface(i.Interface); err != nil {
-			return nil, fmt.Errorf("failed to set multicast interface: %w", err)
-		}
+		i.queue = queue.NewQueue(intf.MTU, &netx.PacketConnWriter{
+			PacketConn: i.speaker.conn.PacketConn,
+			Dest:       multicastAddr,
+		})
 
-		if err := i.conn.JoinGroup(i.Interface, multicastAddr); err != nil {
+		if err := i.speaker.conn.JoinGroup(i.Interface, multicastAddr); err != nil {
 			return nil, fmt.Errorf("failed to join multicast group: %w", err)
 		}
-
-		if err := i.conn.SetMulticastHopLimit(1); err != nil {
-			return nil, fmt.Errorf("failed to set multicast hop limit: %w", err)
-		}
-
-		if err := i.conn.SetMulticastLoopback(false); err != nil {
-			return nil, fmt.Errorf("failed to set multicast loopback: %w", err)
-		}
 	}
 
+	i.helloMulticastTimer = time.NewTicker(i.speaker.config.MulticastHelloInterval)
+	i.periodicUpdateTimer = time.NewTicker(i.speaker.config.UpdateInterval)
+
 	go i.runTimers()
-	go i.runReadLoop()
 
 	i.logger.Debug("Added new interface")
 
@@ -103,17 +95,16 @@ func (s *Speaker) newInterface(index int) (*Interface, error) {
 func (i *Interface) Close() error {
 	i.periodicUpdateTimer.Stop()
 
-	if err := i.conn.Close(); err != nil {
-		return fmt.Errorf("failed to close interface: %w", err)
+	if i.multicast {
+		if err := i.queue.Close(); err != nil {
+			return fmt.Errorf("failed to close queue: %w", err)
+		}
 	}
 
 	return nil
 }
 
 func (i *Interface) runTimers() {
-	i.helloMulticastTimer = time.NewTicker(i.speaker.config.MulticastHelloInterval)
-	i.periodicUpdateTimer = time.NewTicker(i.speaker.config.UpdateInterval)
-
 	for {
 		select {
 		case <-i.periodicUpdateTimer.C:
@@ -125,60 +116,18 @@ func (i *Interface) runTimers() {
 			if err := i.sendMulticastHello(); err != nil {
 				i.logger.Error("Failed to send multicast hello", err)
 			}
-
-		case <-i.nextSendTimer.C:
-			if err := i.sendPacket(&proto.Packet{
-				Body: i.pendingValues,
-			}, MulticastGroupIPv6); err != nil {
-				log.Printf("Failed to send packet: %s", err)
-			} else {
-				i.pendingValues = nil
-			}
 		}
 	}
 }
 
-func (i *Interface) runReadLoop() {
-	buf := make([]byte, i.MTU)
+func (i *Interface) onPacket(pkt *proto.Packet, srcAddr, dstAddr proto.Address) error {
+	isMulticast := dstAddr.IsLinkLocalMulticast()
 
-	for {
-		if err := i.read(buf); err != nil {
-			i.logger.Errorf("Failed to read: %s", err)
-		}
-	}
-}
+	i.logger.Debug("Received packet",
+		slog.Any("src_addr", srcAddr),
+		slog.Any("dst_addr", dstAddr),
+		slog.Bool("multicast", isMulticast))
 
-func (i *Interface) read(buf []byte) error {
-	n, _, sAddr, err := i.conn.ReadFrom(buf)
-	if err != nil {
-		return fmt.Errorf("failed to read: %w", err)
-	}
-
-	// TODO: Ignore silently if source address
-	// - not link-local
-	// - not IPv4 of non-local network
-	// - source port is not well-known
-
-	// Ignore packet silently in case of:
-	// - magic mismatch
-	// - version mismatch
-	if !proto.IsBabelPacket(buf[:n]) {
-		return fmt.Errorf("received invalid packet")
-	}
-
-	p := proto.Parser{}
-
-	_, pkt, err := p.Packet(buf[:n])
-	if err != nil {
-		return fmt.Errorf("failed to decode packet: %w", err)
-	}
-
-	srcAddr := proto.AddressFrom(sAddr)
-
-	return i.onPacket(pkt, srcAddr)
-}
-
-func (i *Interface) onPacket(pkt *proto.Packet, srcAddr proto.Address) error {
 	n, ok := i.Neighbours.Lookup(srcAddr)
 	if !ok {
 		var err error
@@ -186,38 +135,17 @@ func (i *Interface) onPacket(pkt *proto.Packet, srcAddr proto.Address) error {
 			return fmt.Errorf("failed to create neighbour: %w", err)
 		}
 
+		i.logger.Debug("Found new neighbour",
+			slog.Any("addr", srcAddr))
+
+		if h, ok := i.speaker.config.Handler.(NeighbourHandler); ok {
+			h.NeighbourAdded(n)
+		}
+
 		i.Neighbours.Insert(n)
 	}
 
-	i.logger.Debugf("Received multicast packet on interface %s:\n%s", i.Name, spew.Sdump(pkt))
-
-	return n.onPacket(pkt)
-}
-
-func (i *Interface) sendPacket(pkt *proto.Packet, dstAddr proto.Address) error {
-	// TODO: Implement pacing
-	// TODO: Implement chunking
-
-	p := proto.Parser{}
-
-	fmt.Printf("Packet send: %s\n", dstAddr)
-	spew.Dump(pkt)
-
-	pktLen := p.PacketLength(pkt)
-	buf := make([]byte, 0, pktLen)
-	buf = p.AppendPacket(buf, pkt)
-
-	addr := &net.UDPAddr{
-		IP:   dstAddr.AsSlice(),
-		Port: Port,
-	}
-
-	cm := &ipv6.ControlMessage{
-		// IfIndex: ifIndex,
-	}
-
-	_, err := i.conn.WriteTo(buf, cm, addr)
-	return err
+	return n.onPacket(pkt, srcAddr, dstAddr)
 }
 
 func (i *Interface) sendMulticastHello() error {
@@ -225,21 +153,10 @@ func (i *Interface) sendMulticastHello() error {
 
 	i.helloMulticastSeqNo++
 
-	if i.speaker.config.Multicast {
-		return i.sendValues(&proto.Hello{
-			Seqno:    i.helloMulticastSeqNo,
-			Interval: i.speaker.config.MulticastHelloInterval,
-		})
-	} else {
-		if err := i.Neighbours.Foreach(func(a proto.Address, n *Neighbour) error {
-			return i.sendValues(&proto.Hello{
-				Seqno:    i.helloMulticastSeqNo,
-				Interval: i.speaker.config.MulticastHelloInterval,
-			})
-		}); err != nil {
-			return err
-		}
-	}
+	i.sendValue(&proto.Hello{
+		Seqno:    i.helloMulticastSeqNo,
+		Interval: i.speaker.config.MulticastHelloInterval,
+	}, i.speaker.config.MulticastHelloInterval/2)
 
 	return nil
 }
@@ -247,18 +164,25 @@ func (i *Interface) sendMulticastHello() error {
 func (i *Interface) sendUpdate() error {
 	i.logger.Debug("Sending update")
 
-	return i.sendValues(&proto.Update{})
+	i.sendValue(&proto.Update{}, i.speaker.config.MulticastHelloInterval/2)
+
+	return nil
 }
 
-func (i *Interface) sendValues(vs ...proto.Value) error {
-	return i.sendValuesWithJitter(i.speaker.config.MulticastHelloInterval/2, vs...)
+// TODO: Use function
+func (i *Interface) sendMulticastRouteRequest() error { //nolint:unused
+	i.logger.Debug("Sending multicast route request")
+
+	i.sendValue(&proto.RouteRequest{}, i.speaker.config.MulticastHelloInterval/2)
+
+	return nil
 }
 
-func (i *Interface) sendValuesWithJitter(maxDelay time.Duration, vs ...proto.Value) error {
-	i.pendingValues = append(i.pendingValues, vs...)
+// TODO: Use function
+func (i *Interface) sendMulticastSeqnoRequest() error { //nolint:unused
+	i.logger.Debug("Sending multicast seqno request")
 
-	jitter := time.Nanosecond * time.Duration(rand.Float64()*float64(maxDelay))
-	i.nextSendTimer.Reset(jitter)
+	i.sendValue(&proto.SeqnoRequest{}, i.speaker.config.MulticastHelloInterval/2)
 
 	return nil
 }
@@ -294,31 +218,13 @@ func (i *Interface) findLinkLocalAddress() (net.IP, error) {
 	return nil, errors.New("failed to find IPv6 link-local address")
 }
 
-// createConn creates a single UDP socket for the speaker
-// See: Section 4. Protocol Encoding
-// https://datatracker.ietf.org/doc/html/rfc8966#section-4
-func (i *Interface) createConn() (*ipv6.PacketConn, error) {
-	udpConn, err := net.ListenUDP("udp6", &net.UDPAddr{
-		IP:   MulticastGroupIPv6.AsSlice(),
-		Port: Port,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create socket: %w", err)
+func (i *Interface) sendValue(v proto.Value, maxDelay time.Duration) {
+	if i.multicast {
+		i.queue.SendValue(v, maxDelay)
+	} else {
+		i.Neighbours.Foreach(func(n *Neighbour) error { //nolint:errcheck
+			n.queue.SendValue(v, maxDelay)
+			return nil
+		})
 	}
-
-	pktConn := ipv6.NewPacketConn(udpConn)
-
-	if err := pktConn.SetControlMessage(ipv6.FlagDst|ipv6.FlagInterface, true); err != nil {
-		return nil, fmt.Errorf("failed to set destination flag: %w", err)
-	}
-
-	if err := pktConn.SetHopLimit(1); err != nil {
-		return nil, fmt.Errorf("failed to set hop limit: %w", err)
-	}
-
-	if err := pktConn.SetTrafficClass(TrafficClassNetworkControl); err != nil {
-		return nil, fmt.Errorf("failed to set traffic class: %w", err)
-	}
-
-	return pktConn, nil
 }
