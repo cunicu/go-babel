@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/stv0g/go-babel/proto"
+	"golang.org/x/exp/slog"
 )
 
 // 3.2.4. The Neighbour Table
@@ -34,6 +35,8 @@ func (s *helloState) Update(v *proto.Hello) {
 type Neighbour struct {
 	intf *Interface
 
+	logger *slog.Logger
+
 	Address proto.Address
 
 	TxCost      uint16
@@ -56,6 +59,8 @@ func (i *Interface) NewNeighbour(addr proto.Address) (*Neighbour, error) {
 
 		ihuTimeout: NewDeadline(),
 		intf:       i,
+
+		logger: i.logger,
 	}
 
 	if interval := n.intf.speaker.config.UnicastHelloInterval; interval > 0 {
@@ -84,7 +89,7 @@ func (n *Neighbour) runTimers() {
 		select {
 		case <-n.helloUnicast.ticker.C:
 			if err := n.sendUnicastHello(); err != nil {
-				log.Printf("Failed to send Hello: %s", err)
+				n.logger.Error("Failed to send Hello", err)
 			}
 
 		case <-n.ihuTimeout.C:
@@ -141,6 +146,9 @@ func (n *Neighbour) onAcknowledgment(a *proto.Acknowledgment) {
 
 func (n *Neighbour) onPacket(pkt *proto.Packet) error {
 	for _, value := range pkt.Body {
+		n.logger.Debug("Received value",
+			slog.String("type", fmt.Sprintf("%T", value)))
+
 		switch value := value.(type) {
 		case *proto.Update:
 			n.onUpdate(value)

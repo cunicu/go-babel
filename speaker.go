@@ -9,6 +9,7 @@ import (
 	"net"
 
 	"github.com/stv0g/go-babel/proto"
+	"golang.org/x/exp/slog"
 )
 
 // 3.2. Data Structures
@@ -22,7 +23,7 @@ type SpeakerConfig struct {
 	RouteFilter     func(*Route) proto.Metric
 	UnicastPeers    []net.UDPAddr
 	Multicast       bool
-	LoggerFactory   LoggerFactory
+	Logger          *slog.Logger
 }
 
 func (c *SpeakerConfig) SetDefaults() {
@@ -31,8 +32,8 @@ func (c *SpeakerConfig) SetDefaults() {
 		c.Parameters = &dp
 	}
 
-	if c.LoggerFactory == nil {
-		c.LoggerFactory = &DefaultLoggerFactory{}
+	if c.Logger == nil {
+		c.Logger = slog.Default()
 	}
 }
 
@@ -46,7 +47,7 @@ type Speaker struct {
 	Routes     RouteTable
 
 	config SpeakerConfig
-	logger Logger
+	logger *slog.Logger
 }
 
 func NewSpeaker(cfg *SpeakerConfig) (*Speaker, error) {
@@ -62,7 +63,7 @@ func NewSpeaker(cfg *SpeakerConfig) (*Speaker, error) {
 
 	s.config.SetDefaults()
 
-	s.logger = s.config.LoggerFactory.New("speaker")
+	s.logger = s.config.Logger
 
 	// Generate router ID
 	if s.config.RouterID == 0 {

@@ -13,7 +13,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/stv0g/go-babel/proto"
-	"golang.org/x/net/ipv6"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -45,7 +45,8 @@ type Interface struct {
 	conn          *ipv6.PacketConn
 	nextSendTimer Deadline
 	pendingValues []proto.Value
-	logger        Logger
+
+	logger *slog.Logger
 }
 
 func (s *Speaker) newInterface(index int) (*Interface, error) {
@@ -61,7 +62,8 @@ func (s *Speaker) newInterface(index int) (*Interface, error) {
 
 		nextSendTimer: NewDeadline(),
 		speaker:       s,
-		logger:        s.config.LoggerFactory.New(fmt.Sprintf("intf(%s)", intf.Name)),
+		logger: s.config.Logger.With(
+			slog.String("intf", intf.Name)),
 	}
 
 	if i.conn, err = i.createConn(); err != nil {
@@ -93,6 +95,8 @@ func (s *Speaker) newInterface(index int) (*Interface, error) {
 	go i.runTimers()
 	go i.runReadLoop()
 
+	i.logger.Debug("Added new interface")
+
 	return i, nil
 }
 
@@ -114,12 +118,12 @@ func (i *Interface) runTimers() {
 		select {
 		case <-i.periodicUpdateTimer.C:
 			if err := i.sendUpdate(); err != nil {
-				log.Printf("Failed to send periodic update: %s", err)
+				i.logger.Error("Failed to send periodic update", err)
 			}
 
 		case <-i.helloMulticastTimer.C:
 			if err := i.sendMulticastHello(); err != nil {
-				log.Printf("Failed to send multicast hello: %s", err)
+				i.logger.Error("Failed to send multicast hello", err)
 			}
 
 		case <-i.nextSendTimer.C:
@@ -217,6 +221,8 @@ func (i *Interface) sendPacket(pkt *proto.Packet, dstAddr proto.Address) error {
 }
 
 func (i *Interface) sendMulticastHello() error {
+	i.logger.Debug("Sending multicast hello")
+
 	i.helloMulticastSeqNo++
 
 	if i.speaker.config.Multicast {
@@ -239,6 +245,8 @@ func (i *Interface) sendMulticastHello() error {
 }
 
 func (i *Interface) sendUpdate() error {
+	i.logger.Debug("Sending update")
+
 	return i.sendValues(&proto.Update{})
 }
 
