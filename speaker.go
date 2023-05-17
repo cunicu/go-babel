@@ -18,6 +18,7 @@ import (
 type SpeakerConfig struct {
 	*Parameters
 
+	Handler         any
 	RouterID        proto.RouterID
 	InterfaceFilter func(string) bool
 	RouteFilter     func(*Route) proto.Metric
@@ -92,6 +93,10 @@ func NewSpeaker(cfg *SpeakerConfig) (*Speaker, error) {
 		i, err := s.newInterface(intf.Index)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create interface: %w", err)
+		}
+
+		if h, ok := s.config.Handler.(InterfaceHandler); ok {
+			h.InterfaceAdded(i)
 		}
 
 		s.Interfaces.Insert(i)
