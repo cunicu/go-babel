@@ -34,6 +34,14 @@ func (p *Parser) Reset() {
 // Packet
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.2
 
+func (p *Parser) appendPacketHeader(b []byte) []byte {
+	b = p.appendUint8(b, PacketHeaderMagic)
+	b = p.appendUint8(b, PacketHeaderVersion)
+	b = p.appendUint16(b, 0) // Placeholder: length
+
+	return b
+}
+
 // PacketLength calculates the length of the required buffer
 // to encode the packet without actually encoding it.
 // This should be used for pre-allocate an appropriately sized
@@ -76,6 +84,7 @@ func (p *Parser) Packet(b []byte) ([]byte, *Packet, error) {
 	pkt.Body = nil
 	pkt.Trailer = nil
 
+	// Body
 	if b, err = p.forEachValue(b[:bodyLength], func(t ValueType, b []byte) ([]byte, error) {
 		if b, v, err := p.valuePayload(t, b); err != nil {
 			return nil, err
@@ -87,6 +96,7 @@ func (p *Parser) Packet(b []byte) ([]byte, *Packet, error) {
 		return nil, nil, err
 	}
 
+	// Trailer
 	if b, err = p.forEachValue(b, func(t ValueType, b []byte) ([]byte, error) {
 		if !t.IsTrailerType() {
 			return nil, ErrInvalidValueForTrailer
@@ -109,9 +119,7 @@ func (p *Parser) Packet(b []byte) ([]byte, *Packet, error) {
 func (p *Parser) AppendPacket(b []byte, pkt *Packet) []byte {
 	o := len(b)
 
-	b = p.appendUint8(b, PacketHeaderMagic)
-	b = p.appendUint8(b, PacketHeaderVersion)
-	b = p.appendUint16(b, 0) // Placeholder: length
+	b = p.appendPacketHeader(b)
 	b = p.AppendValues(b, pkt.Body)
 	b = p.AppendValues(b, pkt.Trailer)
 
@@ -120,6 +128,24 @@ func (p *Parser) AppendPacket(b []byte, pkt *Packet) []byte {
 	binary.BigEndian.PutUint16(b[o+2:], uint16(bodyLength))
 
 	return b
+}
+
+func (p *Parser) StartPacket(b []byte) []byte {
+	// The parser state is always valid for the boundary of a packet
+	p.Reset()
+
+	// Reset buffer to zero length
+	b = b[:0]
+
+	b = p.appendPacketHeader(b)
+
+	return b
+}
+
+func (p *Parser) FinalizePacket(b []byte) {
+	// Fill in body length
+	bodyLength := len(b) - PacketHeaderLength
+	binary.BigEndian.PutUint16(b[2:], uint16(bodyLength))
 }
 
 // Generic integers
