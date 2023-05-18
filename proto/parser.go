@@ -172,14 +172,14 @@ func (p *Parser) appendUint64(b []byte, v uint64) []byte {
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.3
 
 // ValueLength returns the number of octets of an TLV including the type / length fields.
-func (p *Parser) ValueLength(v Value) (l uint8) {
+func (p *Parser) ValueLength(v Value) (l int) {
 	l = ValueHeaderLength
 
 	switch v := v.(type) {
 	case *Pad1:
 		return 1
 	case *PadN:
-		l += uint8(v.N)
+		l += v.N
 	case *AcknowledgmentRequest:
 		l += 6
 	case *Acknowledgment:
@@ -443,7 +443,7 @@ func (p *Parser) appendRouterID(b []byte, rid RouterID) []byte {
 // Address
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.1.4
 
-func (p *Parser) addressLength(addr Address) uint8 {
+func (p *Parser) addressLength(addr Address) int {
 	switch addressEncoding(&addr) {
 	case AddressEncodingWildcard:
 		return 0
@@ -520,7 +520,7 @@ func (p *Parser) appendAddress(b []byte, addr Address) ([]byte, AddressEncoding)
 // Prefix
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.1.5
 
-func (p *Parser) prefixLength(pfx Prefix, compress bool) uint8 {
+func (p *Parser) prefixLength(pfx Prefix, compress bool) int {
 	return p.addressLength(pfx.Addr())
 }
 

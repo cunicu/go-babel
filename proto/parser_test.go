@@ -152,7 +152,7 @@ var _ = Context("Parser", func() {
 	DescribeTable("Values",
 		func(typ1 ValueType, v1 Value) {
 			b := p.AppendValue(nil, v1)
-			Expect(b).To(HaveLen(int(p.ValueLength(v1))))
+			Expect(b).To(HaveLen(p.ValueLength(v1)))
 
 			p.Reset()
 
