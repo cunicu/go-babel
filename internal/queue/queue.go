@@ -4,26 +4,31 @@
 package queue
 
 import (
-	"encoding/binary"
+	"container/list"
 	"io"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/stv0g/go-babel/internal/deadline"
 	"github.com/stv0g/go-babel/proto"
-	"golang.org/x/exp/slog"
+)
+
+const (
+	// TODO: Is this a reasonable choice?
+	pacingTimeout = 10 * time.Millisecond
 )
 
 // Queue sends out TLV values over a net.PacketConn
 type Queue struct {
 	mtu    int
-	buffer []byte
-	parser proto.Parser
 	writer io.Writer
 
 	timer deadline.Deadline
 
-	values  chan proto.Value
+	values *list.List // protected by mu
+	mu     sync.Mutex
+
 	stop    chan any
 	stopped chan any
 }
@@ -31,15 +36,12 @@ type Queue struct {
 func NewQueue(mtu int, writer io.Writer) *Queue {
 	q := &Queue{
 		mtu:     mtu,
-		buffer:  make([]byte, 0, mtu),
 		writer:  writer,
 		stop:    make(chan any),
 		stopped: make(chan any),
-		values:  make(chan proto.Value),
+		values:  list.New(),
 		timer:   deadline.NewDeadline(),
 	}
-
-	q.resetBuffer()
 
 	go q.run()
 
@@ -54,64 +56,92 @@ func (q *Queue) Close() error {
 }
 
 func (b *Queue) SendValues(vs []proto.Value, maxDelay time.Duration) {
-	for _, v := range vs {
-		b.values <- v
-	}
-
-	b.FlushIn(maxDelay)
+	b.push(vs...)
+	b.SendIn(maxDelay)
 }
 
 func (b *Queue) SendValue(v proto.Value, maxDelay time.Duration) {
-	b.values <- v
-
-	b.FlushIn(maxDelay)
+	b.push(v)
+	b.SendIn(maxDelay)
 }
 
-func (q *Queue) FlushIn(maxDelay time.Duration) {
+func (q *Queue) SendIn(maxDelay time.Duration) {
 	jitter := maxDelay*3/4 + time.Duration(rand.Float64()*float64(maxDelay/2))
 
 	q.timer.Reset(jitter)
 }
 
 func (q *Queue) run() {
-	for {
-		select {
-		case v := <-q.values:
-			vlen := int(q.parser.ValueLength(v))
-
-			if cap(q.buffer)-len(q.buffer)-vlen < 0 {
-				if err := q.flushBuffer(); err != nil {
-					panic(err) // TODO: Handle logging
-				}
-			}
-
-			q.buffer = q.parser.AppendValue(q.buffer, v)
-
-		case <-q.timer.C:
-			if err := q.flushBuffer(); err != nil {
-				panic(err) // TODO: Handle logging
-			}
-		}
+	for range q.timer.C {
+		q.send()
 	}
 }
 
-func (q *Queue) flushBuffer() error {
-	// Fill in body length
-	bodyLength := len(q.buffer) - proto.PacketHeaderLength
-	binary.BigEndian.PutUint16(q.buffer[2:], uint16(bodyLength))
+func (q *Queue) send() error {
+	var empty bool
+	var v proto.Value
 
-	// TODO: Handle partial writes
-	if _, err := q.writer.Write(q.buffer); err != nil {
+	p := proto.NewParser()
+
+	b := make([]byte, 0, q.mtu)
+	b = p.StartPacket(b)
+
+	for {
+		// Take next value from queue if it can still fit
+		// into the MTU-sized buffer.
+		if v, empty = q.popIf(func(v any) bool {
+			return cap(b)-len(b)-p.ValueLength(v) >= 0
+		}); v == nil {
+			break
+		}
+
+		b = p.AppendValue(b, v)
+	}
+
+	p.FinalizePacket(b)
+
+	// TODO: Handle partial writes?
+	if _, err := q.writer.Write(b); err != nil {
 		return err
 	}
 
-	slog.Debug("Flushing queue")
-
-	q.resetBuffer()
+	// Send next packet within a short time if
+	// there are still values in the queue
+	if !empty {
+		q.SendIn(pacingTimeout)
+	}
 
 	return nil
 }
 
-func (q *Queue) resetBuffer() {
-	q.buffer = q.parser.AppendPacket(q.buffer[:0], &proto.Packet{})
+func (q *Queue) empty() bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	return q.values.Len() == 0
+}
+
+func (q *Queue) push(vs ...proto.Value) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	for _, v := range vs {
+		q.values.PushBack(v)
+	}
+}
+
+func (q *Queue) popIf(test func(v any) bool) (proto.Value, bool) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	v := q.values.Front()
+	if v != nil {
+		return nil, true
+	}
+
+	if !test(v.Value) {
+		return nil, false
+	}
+
+	return q.values.Remove(v), q.values.Len() == 0
 }
