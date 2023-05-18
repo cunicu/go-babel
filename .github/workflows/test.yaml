@@ -19,9 +19,13 @@ jobs:
         go-version-file: go.mod
         check-latest: true
 
-    - name: Install dependencies
+    - name: Install Go dependencies
       run: |
         go install github.com/onsi/ginkgo/v2/ginkgo@v2.9.0
+
+    - name: Install system dependencies
+      run: sudo apt-get install -y
+            libpcap-dev
 
     - name: Build
       run: go build -v ./...
