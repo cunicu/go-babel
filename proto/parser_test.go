@@ -206,14 +206,14 @@ var _ = Context("Parser", func() {
 			NextHop: netip.MustParseAddr("1.2.3.4"),
 		}),
 		Entry("Update", TypeUpdate, &Update{
-			Flags:    FlagUpdateRouterID,
+			Flags:    FlagUpdatePrefix,
 			Interval: 2 * time.Second,
 			Seqno:    1233,
 			Metric:   100,
 			Prefix:   netip.MustParsePrefix("192.168.0.0/16"),
 		}),
 		Entry("Update with SourcePrefix", TypeUpdate, &Update{
-			Flags:        FlagUpdateRouterID,
+			Flags:        FlagUpdatePrefix,
 			Interval:     2 * time.Second,
 			Seqno:        1233,
 			Metric:       100,

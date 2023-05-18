@@ -19,14 +19,14 @@ import (
 // See also: 4.5. Parser State and Encoding of Updates
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.5
 type Parser struct {
-	CurrentDefaultPrefix map[AddressEncoding]Prefix
+	CurrentDefaultPrefix map[AddressEncoding]Address
 	CurrentNextHop       map[AddressFamily]Address
 	CurrentRouterID      RouterID
 }
 
 // Reset resets the internal parser state
 func (p *Parser) Reset() {
-	p.CurrentDefaultPrefix = map[AddressEncoding]Prefix{}
+	p.CurrentDefaultPrefix = map[AddressEncoding]Address{}
 	p.CurrentNextHop = map[AddressFamily]Address{}
 	p.CurrentRouterID = RouterIDUnspecified
 }
@@ -907,8 +907,28 @@ func (p *Parser) update(b []byte) ([]byte, *Update, error) {
 		return nil, nil, err
 	}
 
+	if v.Flags&FlagUpdateRouterID != 0 {
+		switch ae {
+		case AddressEncodingIPv4:
+			addr := v.Prefix.Addr().As4()
+			rid := []byte{0, 0, 0, 0}
+			rid = append(rid, addr[:4]...)
+
+			p.CurrentRouterID = *(*RouterID)(rid)
+		case AddressEncodingIPv6, AddressEncodingIPv6LinkLocal:
+			addr := v.Prefix.Addr().As16()
+
+			p.CurrentRouterID = *(*RouterID)(addr[8:16])
+		}
+	}
+
+	if v.Flags&FlagUpdatePrefix != 0 {
+		p.CurrentDefaultPrefix[ae] = v.Prefix.Addr()
+	}
+
 	// Fill in fields from parser state
 	af := addressFamilyFromAddressEncoding(ae)
+
 	v.RouterID = p.CurrentRouterID
 	v.NextHop = p.CurrentNextHop[af]
 
