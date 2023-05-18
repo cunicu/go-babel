@@ -12,6 +12,7 @@ import (
 
 	"github.com/stv0g/go-babel/internal/deadline"
 	"github.com/stv0g/go-babel/proto"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -73,7 +74,9 @@ func (q *Queue) SendIn(maxDelay time.Duration) {
 
 func (q *Queue) run() {
 	for range q.timer.C {
-		q.send()
+		if err := q.send(); err != nil {
+			slog.Error("Failed to send packet", err)
+		}
 	}
 }
 
@@ -112,13 +115,6 @@ func (q *Queue) send() error {
 	}
 
 	return nil
-}
-
-func (q *Queue) empty() bool {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-
-	return q.values.Len() == 0
 }
 
 func (q *Queue) push(vs ...proto.Value) {
