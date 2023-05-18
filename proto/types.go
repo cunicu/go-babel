@@ -45,8 +45,10 @@ const (
 )
 
 var (
-	RouterIDUnspecified = RouterID{}
-	RouterIDAllOnes     = RouterID{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
+	RouterIDAllZeros = RouterID{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	RouterIDAllOnes  = RouterID{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
+
+	RouterIDUnspecified = RouterIDAllZeros
 )
 
 const (
@@ -100,4 +102,20 @@ func (t ValueType) IsTrailerType() bool {
 	default:
 		return false
 	}
+}
+
+func RouterIDFromAddr(addr netip.Addr) RouterID {
+	i := RouterIDAllZeros
+	s := addr.AsSlice()
+
+	switch {
+	case addr.Is4():
+		copy(i[4:], s)
+	case addr.Is4In6():
+		copy(i[4:], s[12:])
+	case addr.Is6():
+		copy(i[:], s[8:])
+	}
+
+	return i
 }

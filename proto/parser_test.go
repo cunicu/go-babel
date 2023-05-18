@@ -105,6 +105,26 @@ var _ = Context("Parser", func() {
 			Expect(b).To(BeEmpty())
 		})
 
+		DescribeTable("RouterID invalids",
+			func(rid RouterID) {
+				_, _, err := p.routerID(rid[:])
+				Expect(err).To(MatchError(ErrInvalidRouterID))
+			},
+			Entry("AllOnes", RouterIDAllOnes),
+			Entry("AllZeros", RouterIDAllZeros),
+		)
+
+		DescribeTable("RouterIDFromAddr",
+			func(addrStr string, rid RouterID) {
+				addr := netip.MustParseAddr(addrStr)
+				Expect(RouterIDFromAddr(addr)).To(Equal(rid))
+			},
+			Entry("IPv4", "10.168.44.55", RouterID{0, 0, 0, 0, 10, 168, 44, 55}),
+			Entry("IPv6", "2a09:bac0:35::826:93f9", RouterID{0, 0, 0, 0, 0x08, 0x26, 0x93, 0xf9}),
+			Entry("IPv6 link-local", "fe80::210:5aff:feaa:20a2", RouterID{0x02, 0x10, 0x5a, 0xff, 0xfe, 0xaa, 0x20, 0xa2}),
+			Entry("IPv4in6 mapped", "::ffff:1.2.3.4", RouterID{0, 0, 0, 0, 1, 2, 3, 4}),
+		)
+
 		DescribeTable("Address",
 			func(addr string, len int, expAE uint8) {
 				v1 := netip.MustParseAddr(addr)
