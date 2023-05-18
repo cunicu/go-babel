@@ -312,3 +312,73 @@ func IsUrgent(v Value) bool {
 		return false
 	}
 }
+
+func ValuesType(v Value) ValueType {
+	switch v.(type) {
+	case *Pad1:
+		return TypePad1
+	case *PadN:
+		return TypePadN
+	case *AcknowledgmentRequest:
+		return TypeAcknowledgmentRequest
+	case *Acknowledgment:
+		return TypeAcknowledgment
+	case *Hello:
+		return TypeHello
+	case *IHU:
+		return TypeIHU
+	case *RouterIDValue:
+		return TypeRouterID
+	case *NextHop:
+		return TypeNextHop
+	case *Update:
+		return TypeUpdate
+	case *RouteRequest:
+		return TypeRouteRequest
+	case *SeqnoRequest:
+		return TypeSeqnoRequest
+	default:
+		panic(ErrUnsupportedValue)
+	}
+}
+
+func (t ValueType) String() string {
+	switch t {
+	case TypePad1:
+		return "Pad1"
+	case TypePadN:
+		return "PadN"
+	case TypeAcknowledgmentRequest:
+		return "AcknowledgmentRequest"
+	case TypeAcknowledgment:
+		return "Acknowledgment"
+	case TypeHello:
+		return "Hello"
+	case TypeIHU:
+		return "IHU"
+	case TypeRouterID:
+		return "RouterID"
+	case TypeNextHop:
+		return "NextHop"
+	case TypeUpdate:
+		return "Update"
+	case TypeRouteRequest:
+		return "RouteRequest"
+	case TypeSeqnoRequest:
+		return "SeqnoRequest"
+	case TypeTSPC:
+		return "TSPC"
+	case TypeHMAC:
+		return "HMAC"
+	case TypeMAC:
+		return "MAC"
+	case TypePC:
+		return "PC"
+	case TypeChallengeRequest:
+		return "ChallengeRequest"
+	case TypeChallengeReply:
+		return "ChallengeReply"
+	default:
+		return "<Unknown>"
+	}
+}

@@ -126,7 +126,8 @@ func (i *Interface) onPacket(pkt *proto.Packet, srcAddr, dstAddr proto.Address) 
 	i.logger.Debug("Received packet",
 		slog.Any("src_addr", srcAddr),
 		slog.Any("dst_addr", dstAddr),
-		slog.Bool("multicast", isMulticast))
+		slog.Bool("multicast", isMulticast),
+		slog.Any("packet", pkt))
 
 	n, ok := i.Neighbours.Lookup(srcAddr)
 	if !ok {

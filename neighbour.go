@@ -4,9 +4,9 @@
 package babel
 
 import (
-	"fmt"
 	"math"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/stv0g/go-babel/internal/deadline"
@@ -151,8 +151,10 @@ func (n *Neighbour) onAcknowledgment(a *proto.Acknowledgment) {
 
 func (n *Neighbour) onPacket(pkt *proto.Packet, srcAddr, dstAddr proto.Address) error {
 	for _, value := range pkt.Body {
+		typ := proto.ValuesType(value).String()
 		n.logger.Debug("Received value",
-			slog.String("type", fmt.Sprintf("%T", value)))
+			slog.Any("type", typ),
+			slog.Any(strings.ToLower(typ), value))
 
 		switch value := value.(type) {
 		case *proto.Update:

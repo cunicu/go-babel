@@ -3,6 +3,8 @@
 
 package proto
 
+import "golang.org/x/exp/slog"
+
 const (
 	PacketHeaderMagic   = 42
 	PacketHeaderVersion = 2
@@ -14,6 +16,12 @@ const (
 type Packet struct {
 	Body    []Value
 	Trailer []Value
+}
+
+func (p *Packet) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("num_body", len(p.Body)),
+		slog.Any("num_trailer", len(p.Trailer)))
 }
 
 func IsBabelPacket(buf []byte) bool {
