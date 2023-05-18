@@ -117,11 +117,17 @@ var _ = Context("Parser", func() {
 				Expect(err).To(Succeed())
 				Expect(v2).To(Equal(v1), "Addresses are not equal: %v != %v", v1, v2)
 				Expect(b).To(BeEmpty())
+
+				if ae == AddressEncodingIPv4inIPv6 {
+					Expect(v2.Is4In6()).To(BeTrue())
+					Expect(v2.Is6()).To(BeTrue())
+				}
 			},
 			Entry("AddressEncodingIPv4", "1.1.1.1", 4, AddressEncodingIPv4),
 			Entry("AddressEncodingIPv6", "fd3d:bd4f:9738::1036:d55b:fb01:b6d1", 16, AddressEncodingIPv6),
 			Entry("AddressEncodingWildcard", "::", 0, AddressEncodingWildcard),
 			Entry("AddressEncodingIPv6LinkLocal", "fe80::1234:5678:90AB:CDEF", 8, AddressEncodingIPv6LinkLocal),
+			Entry("AddressEncodingIPv4inIPv6", "::ffff:1.2.3.4", 4, AddressEncodingIPv4inIPv6),
 		)
 
 		DescribeTable("Prefix",
@@ -137,11 +143,17 @@ var _ = Context("Parser", func() {
 				Expect(err).To(Succeed())
 				Expect(v2).To(Equal(v1))
 				Expect(b).To(BeEmpty())
+
+				if ae == AddressEncodingIPv4inIPv6 {
+					Expect(v2.Addr().Is4In6()).To(BeTrue())
+					Expect(v2.Addr().Is6()).To(BeTrue())
+				}
 			},
 			Entry("AddressEncodingIPv4", "1.1.0.0/16", 2, AddressEncodingIPv4, uint8(16)),
 			Entry("AddressEncodingIPv6", "fd3d:bd4f:9738::/48", 6, AddressEncodingIPv6, uint8(48)),
 			Entry("AddressEncodingWildcard", "::/0", 0, AddressEncodingWildcard, uint8(0)),
 			Entry("AddressEncodingIPv6LinkLocal", "fe80::1234:5678:90AB:CDEF/128", 8, AddressEncodingIPv6LinkLocal, uint8(128)),
+			Entry("AddressEncodingIPv4inIPv6", "::ffff:10.0.0.0/16", 2, AddressEncodingIPv4inIPv6, uint8(16)),
 		)
 
 		It("Prefixes compression", Pending, func() {

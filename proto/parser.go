@@ -496,11 +496,13 @@ func (p *Parser) address(b []byte, ae AddressEncoding, omitted uint8, plen int8)
 	case AddressEncodingWildcard:
 		return b, netip.IPv6Unspecified(), nil
 
-	case AddressEncodingIPv4, AddressEncodingIPv6:
+	case AddressEncodingIPv4, AddressEncodingIPv6, AddressEncodingIPv4inIPv6:
 		var alen, rplen uint8
-		if ae == AddressEncodingIPv6 {
+
+		switch ae {
+		case AddressEncodingIPv6:
 			alen = net.IPv6len
-		} else {
+		case AddressEncodingIPv4, AddressEncodingIPv4inIPv6:
 			alen = net.IPv4len
 		}
 
@@ -539,6 +541,15 @@ func (p *Parser) address(b []byte, ae AddressEncoding, omitted uint8, plen int8)
 			abuf[rplen/8] &= uint8(mask)
 		}
 
+		// Parse the IPv4in6 mapped address as an IPv6 ipnet.Addr.
+		if ae == AddressEncodingIPv4inIPv6 {
+			bbuf := make([]byte, net.IPv6len)
+			copy(bbuf, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff})
+			copy(bbuf[12:], abuf)
+
+			abuf = bbuf
+		}
+
 		if a, ok := netip.AddrFromSlice(abuf); !ok {
 			return nil, Address{}, ErrInvalidAddress
 		} else {
@@ -574,11 +585,17 @@ func (p *Parser) appendAddress(b []byte, addr Address, plen int8) ([]byte, Addre
 		return append(b, a[8:]...), ae
 	case AddressEncodingWildcard:
 		return b, ae
-	case AddressEncodingIPv4, AddressEncodingIPv6:
+	case AddressEncodingIPv4, AddressEncodingIPv6, AddressEncodingIPv4inIPv6:
+		a := addr.AsSlice()
+
 		var alen, rplen uint8
-		if ae == AddressEncodingIPv6 {
+		switch ae {
+		case AddressEncodingIPv6:
 			alen = net.IPv6len
-		} else {
+		case AddressEncodingIPv4inIPv6:
+			a = a[12:] // Strip IPv4in6 prefix
+			fallthrough
+		case AddressEncodingIPv4:
 			alen = net.IPv4len
 		}
 
@@ -593,7 +610,6 @@ func (p *Parser) appendAddress(b []byte, addr Address, plen int8) ([]byte, Addre
 			blen++
 		}
 
-		a := addr.AsSlice()
 		return append(b, a[:blen]...), ae
 	default:
 		panic(ErrInvalidAddress)

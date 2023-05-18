@@ -21,6 +21,8 @@ func addressEncoding(a *Address) AddressEncoding {
 	switch {
 	case a.IsUnspecified():
 		return AddressEncodingWildcard
+	case a.Is4In6():
+		return AddressEncodingIPv4inIPv6
 	case a.Is6() && a.IsLinkLocalUnicast():
 		return AddressEncodingIPv6LinkLocal
 	case a.Is4():
