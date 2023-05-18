@@ -78,8 +78,7 @@ func (p *Parser) Packet(b []byte) ([]byte, *Packet, error) {
 		return nil, nil, ErrUnsupportedVersion
 	}
 
-	b, bodyLength, err = p.uint16(b)
-	if err != nil {
+	if b, bodyLength, err = p.uint16(b); err != nil {
 		return nil, nil, err
 	}
 
@@ -87,32 +86,11 @@ func (p *Parser) Packet(b []byte) ([]byte, *Packet, error) {
 		return nil, nil, ErrTooShort
 	}
 
-	pkt.Body = nil
-	pkt.Trailer = nil
-
-	// Body
-	if b, err = p.forEachValue(b[:bodyLength], func(t ValueType, b []byte) ([]byte, error) {
-		if b, v, err := p.valuePayload(t, b); err != nil {
-			return nil, err
-		} else {
-			pkt.Body = append(pkt.Body, v)
-			return b, nil
-		}
-	}); err != nil {
+	if b, pkt.Body, err = p.Values(b, false); err != nil {
 		return nil, nil, err
 	}
 
-	// Trailer
-	if b, err = p.forEachValue(b, func(t ValueType, b []byte) ([]byte, error) {
-		if !t.IsTrailerType() {
-			return nil, ErrInvalidValueForTrailer
-		} else if b, v, err := p.valuePayload(t, b); err != nil {
-			return nil, err
-		} else {
-			pkt.Trailer = append(pkt.Trailer, v)
-			return b, nil
-		}
-	}); err != nil {
+	if b, pkt.Trailer, err = p.Values(b, true); err != nil {
 		return nil, nil, err
 	}
 
@@ -422,6 +400,25 @@ func (p *Parser) forEachSubValue(b []byte, cb func(t ValueType, b []byte) ([]byt
 
 		return b, nil
 	})
+}
+
+func (p *Parser) Values(b []byte, trailer bool) ([]byte, []Value, error) {
+	var err error
+	vs := []Value{}
+	if b, err = p.forEachValue(b, func(t ValueType, b []byte) ([]byte, error) {
+		if trailer && !t.IsTrailerType() {
+			return nil, ErrInvalidValueForTrailer
+		} else if b, v, err := p.valuePayload(t, b); err != nil {
+			return nil, err
+		} else {
+			vs = append(vs, v)
+			return b, nil
+		}
+	}); err != nil {
+		return nil, nil, err
+	}
+
+	return b, vs, nil
 }
 
 func (p *Parser) AppendValues(b []byte, vs []Value) []byte {
@@ -955,23 +952,12 @@ func (p *Parser) update(b []byte) ([]byte, *Update, error) {
 		return nil, nil, err
 	}
 
-	if v.Flags&FlagUpdateRouterID != 0 {
-		switch ae {
-		case AddressEncodingIPv4:
-			addr := v.Prefix.Addr().As4()
-			rid := []byte{0, 0, 0, 0}
-			rid = append(rid, addr[:4]...)
-
-			p.CurrentRouterID = *(*RouterID)(rid)
-		case AddressEncodingIPv6, AddressEncodingIPv6LinkLocal:
-			addr := v.Prefix.Addr().As16()
-
-			p.CurrentRouterID = *(*RouterID)(addr[8:16])
-		}
-	}
-
 	if v.Flags&FlagUpdatePrefix != 0 {
 		p.CurrentDefaultPrefix[ae] = v.Prefix.Addr()
+	}
+
+	if v.Flags&FlagUpdateRouterID != 0 {
+		p.CurrentRouterID = RouterIDFromAddr(v.Prefix.Addr())
 	}
 
 	// Fill in fields from parser state
@@ -998,6 +984,14 @@ func (p *Parser) appendUpdate(b []byte, v *Update) []byte {
 	b[o+0] = ae
 	b[o+2] = plen
 	b[o+3] = omitted
+
+	if v.Flags&FlagUpdatePrefix != 0 {
+		p.CurrentDefaultPrefix[ae] = v.Prefix.Addr()
+	}
+
+	if v.Flags&FlagUpdateRouterID != 0 {
+		p.CurrentRouterID = RouterIDFromAddr(v.Prefix.Addr())
+	}
 
 	if v.SourcePrefix != nil {
 		b = p.appendSourcePrefix(b, *v.SourcePrefix)

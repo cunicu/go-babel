@@ -184,6 +184,106 @@ var _ = Context("Parser", func() {
 	pfx := netip.MustParsePrefix("10.0.0.0/24")
 
 	Describe("Values", func() {
+		Describe("Flags", func() {
+			DescribeTable("FlagUpdateRouterID",
+				func(pfxStr string) {
+					pfx := netip.MustParsePrefix(pfxStr)
+					rid := RouterIDFromAddr(pfx.Addr())
+
+					b := p.AppendValue(nil, &Update{
+						Flags:  FlagUpdateRouterID,
+						Prefix: pfx,
+					})
+
+					// Check that an update without the flag does not overwrite the current router ID
+					b = p.AppendValue(b, &Update{
+						Prefix: netip.MustParsePrefix("10.169.0.0/16"),
+					})
+
+					b = p.AppendValue(b, &Update{
+						Prefix: netip.MustParsePrefix("2a10:bac0:35::826:93f9/128"),
+					})
+
+					b = p.AppendValue(b, &Update{
+						Prefix: netip.MustParsePrefix("fe80::310:5aff:feaa:20a2/64"),
+					})
+
+					b = p.AppendValue(b, &Update{
+						Prefix: netip.MustParsePrefix("::ffff:1.2.3.5/128"),
+					})
+
+					Expect(p.CurrentRouterID).To(Equal(rid))
+
+					p.Reset()
+
+					_, _, err := p.Values(b, false)
+					Expect(err).To(Succeed())
+
+					Expect(p.CurrentRouterID).To(Equal(rid))
+				},
+				Entry("IPv4", "10.168.0.0/16"),
+				Entry("IPv6", "2a09:bac0:35::826:93f9/128"),
+				Entry("IPv6 link-local", "fe80::210:5aff:feaa:20a2/64"),
+				Entry("IPv4in6 mapped", "::ffff:1.2.3.4/128"),
+			)
+
+			It("FlagUpdatePrefix", func() {
+				pfx4 := netip.MustParsePrefix("10.168.0.0/16")
+				pfx6 := netip.MustParsePrefix("fd5e:181e:5bbd::/48")
+				pfx6LL := netip.MustParsePrefix("fe80::1234:5678:90ab:cdef/128")
+				pfx4in6 := netip.MustParsePrefix("::ffff:1.2.3.4/128")
+
+				expectedDefaultPrefix := map[AddressEncoding]Address{
+					AddressEncodingIPv4:          pfx4.Addr(),
+					AddressEncodingIPv6:          pfx6.Addr(),
+					AddressEncodingIPv6LinkLocal: pfx6LL.Addr(),
+					AddressEncodingIPv4inIPv6:    pfx4in6.Addr(),
+				}
+
+				// IPv4
+				b := p.AppendValue(nil, &Update{
+					Flags:  FlagUpdatePrefix,
+					Prefix: pfx4,
+				})
+
+				// IPv6
+				b = p.AppendValue(b, &Update{
+					Flags:  FlagUpdatePrefix,
+					Prefix: pfx6,
+				})
+
+				// IPv6 link-local
+				b = p.AppendValue(b, &Update{
+					Flags:  FlagUpdatePrefix,
+					Prefix: pfx6LL,
+				})
+
+				// IPv4in6 mapped
+				b = p.AppendValue(b, &Update{
+					Flags:  FlagUpdatePrefix,
+					Prefix: pfx4in6,
+				})
+
+				// Check that an update without the flag does not overwrite the current router ID
+				b = p.AppendValue(b, &Update{
+					Prefix: netip.MustParsePrefix("10.169.0.0/16"),
+				})
+
+				b = p.AppendValue(b, &Update{
+					Prefix: netip.MustParsePrefix("fe80::1337/128"),
+				})
+
+				Expect(p.CurrentDefaultPrefix).To(Equal(expectedDefaultPrefix))
+
+				p.Reset()
+
+				_, _, err := p.Values(b, false)
+				Expect(err).To(Succeed())
+
+				Expect(p.CurrentDefaultPrefix).To(Equal(expectedDefaultPrefix))
+			})
+		})
+
 		DescribeTable("Values",
 			func(typ1 ValueType, v1 Value) {
 				b := p.AppendValue(nil, v1)

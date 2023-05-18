@@ -21,7 +21,7 @@ func (h *mockNeighbourHandler) NeighbourAdded(n *babel.Neighbour) {
 
 func (h *mockNeighbourHandler) NeighbourRemoved(n *babel.Neighbour) {}
 
-var _ = Context("speaker", func() {
+var _ = Context("Speaker", func() {
 	var err error
 	var n *g.Network
 
@@ -37,7 +37,7 @@ var _ = Context("speaker", func() {
 		Expect(err).To(Succeed())
 	})
 
-	It("works", func() {
+	It("discover neighbours", func() {
 		sw, err := n.AddSwitch("sw1")
 		Expect(err).To(Succeed())
 
