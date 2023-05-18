@@ -12,6 +12,7 @@ var (
 	ErrUnsupportedVersion           = errors.New("unsupported version")
 	ErrCompressionNotAllowed        = errors.New("address encoding does not allow compression")
 	ErrInvalidAddress               = errors.New("invalid address")
+	ErrMissingDefaultPrefix         = errors.New("received update TLV with non-zero omitted value but no previous default prefix")
 	ErrInvalidRouterID              = errors.New("invalid router-id")
 	ErrInvalidValueType             = errors.New("invalid value type")
 	ErrTooShort                     = errors.New("buffer is too short")
