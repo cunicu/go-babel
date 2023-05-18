@@ -31,7 +31,7 @@ type SpeakerConfig struct {
 }
 
 func (c *SpeakerConfig) SetDefaults() error {
-	if c.RouterID == 0 {
+	if c.RouterID == proto.RouterIDUnspecified {
 		var err error
 		if c.RouterID, err = proto.GenerateRouterID(); err != nil {
 			return fmt.Errorf("failed to generate router ID: %w", err)

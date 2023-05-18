@@ -5,7 +5,6 @@ package proto
 
 import (
 	"crypto/rand"
-	"encoding/binary"
 	"fmt"
 	"net/netip"
 	"time"
@@ -18,7 +17,7 @@ type (
 
 	// 4.1.3. Router-Id
 	// https://datatracker.ietf.org/doc/html/rfc8966#section-4.1.3
-	RouterID = uint64
+	RouterID = [8]byte
 
 	// 4.1.4. Address
 	// https://datatracker.ietf.org/doc/html/rfc8966#section-4.1.4
@@ -45,6 +44,11 @@ const (
 	Retraction Metric = 0xffff
 )
 
+var (
+	RouterIDUnspecified = RouterID{}
+	RouterIDAllOnes     = RouterID{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
+)
+
 const (
 	AddressFamilyUnspecified AddressFamily = iota
 	AddressFamilyIPv4
@@ -67,12 +71,12 @@ func GenerateRouterID() (RouterID, error) {
 
 	n, err := rand.Read(b)
 	if err != nil {
-		return 0, err
+		return RouterIDUnspecified, err
 	} else if n != 8 {
-		return 0, fmt.Errorf("failed to generated router id")
+		return RouterIDUnspecified, fmt.Errorf("failed to generated router id")
 	}
 
-	return binary.BigEndian.Uint64(b), nil
+	return *(*RouterID)(b), nil
 }
 
 // IsMandatory checks whether the sub-TLV type is mandatory

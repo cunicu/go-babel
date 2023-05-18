@@ -20,14 +20,14 @@ import (
 type Parser struct {
 	CurrentDefaultPrefix map[AddressEncoding]Prefix
 	CurrentNextHop       map[AddressFamily]Address
-	CurrentRouterID      uint64
+	CurrentRouterID      RouterID
 }
 
 // Reset resets the internal parser state
 func (p *Parser) Reset() {
 	p.CurrentDefaultPrefix = map[AddressEncoding]Prefix{}
 	p.CurrentNextHop = map[AddressFamily]Address{}
-	p.CurrentRouterID = 0
+	p.CurrentRouterID = RouterIDUnspecified
 }
 
 // Packet
@@ -419,22 +419,25 @@ func (p *Parser) appendInterval(b []byte, i time.Duration) []byte {
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.1.3
 
 func (p *Parser) routerID(b []byte) ([]byte, RouterID, error) {
-	b, rid, err := p.uint64(b)
-	if err != nil {
-		return nil, 0, err
-	} else if rid == 0x0000000000000000 || rid == 0xFFFFFFFFFFFFFFFF {
-		return nil, 0, ErrInvalidRouterID
+	if len(b) < 8 {
+		return nil, RouterIDUnspecified, ErrTooShort
+	}
+
+	rid := *(*RouterID)(b)
+
+	if rid == RouterIDUnspecified || rid == RouterIDAllOnes {
+		return nil, RouterIDUnspecified, ErrInvalidRouterID
 	}
 
 	return b, rid, nil
 }
 
 func (p *Parser) appendRouterID(b []byte, rid RouterID) []byte {
-	if rid == 0x0000000000000000 || rid == 0xFFFFFFFFFFFFFFFF {
+	if rid == RouterIDUnspecified || rid == RouterIDAllOnes {
 		panic(ErrInvalidRouterID)
 	}
 
-	return p.appendUint64(b, rid)
+	return append(b, rid[:]...)
 }
 
 // Address

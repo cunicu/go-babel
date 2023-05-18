@@ -93,7 +93,7 @@ var _ = Context("Parser", func() {
 	})
 
 	It("RouterID", func() {
-		v1 := RouterID(0x12345678)
+		v1 := RouterID{0x01, 0x23, 0x34, 0x45, 0x67, 0x89, 0x0a, 0xbc}
 
 		b := p.appendRouterID(nil, v1)
 		Expect(b).To(HaveLen(8))
@@ -200,7 +200,7 @@ var _ = Context("Parser", func() {
 			},
 		}),
 		Entry("RouterID", TypeRouterID, &RouterIDValue{
-			RouterID: 0xababcdcd,
+			RouterID: RouterID{0x01, 0x23, 0x34, 0x45, 0x67, 0x89, 0x0a, 0xbc},
 		}),
 		Entry("NextHop", TypeNextHop, &NextHop{
 			NextHop: netip.MustParseAddr("1.2.3.4"),
@@ -230,13 +230,13 @@ var _ = Context("Parser", func() {
 		Entry("SeqnoRequest", TypeSeqnoRequest, &SeqnoRequest{
 			Seqno:    1233,
 			HopCount: 99,
-			RouterID: 0xababcdcd,
+			RouterID: RouterID{0x01, 0x23, 0x34, 0x45, 0x67, 0x89, 0x0a, 0xbc},
 			Prefix:   netip.MustParsePrefix("192.168.0.0/16"),
 		}),
 		Entry("SeqnoRequest with SourcePrefix", TypeSeqnoRequest, &SeqnoRequest{
 			Seqno:        1233,
 			HopCount:     99,
-			RouterID:     0xababcdcd,
+			RouterID:     RouterID{0x01, 0x23, 0x34, 0x45, 0x67, 0x89, 0x0a, 0xbc},
 			Prefix:       netip.MustParsePrefix("192.168.0.0/16"),
 			SourcePrefix: &pfx,
 		}),
