@@ -4,9 +4,12 @@
 package proto
 
 import (
+	"encoding/hex"
 	"math"
 	"net/netip"
 	"time"
+
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -91,6 +94,11 @@ type PadN struct {
 	N int
 }
 
+func (p *PadN) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("n", p.N))
+}
+
 // 4.6.3. Acknowledgment Request
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.3
 type AcknowledgmentRequest struct {
@@ -98,10 +106,20 @@ type AcknowledgmentRequest struct {
 	Interval time.Duration // A time interval after which the sender will assume that this packet has been lost. This MUST NOT be 0. The receiver MUST send an Acknowledgment TLV before this time has elapsed (with a margin allowing for propagation time).
 }
 
+func (a *AcknowledgmentRequest) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("opaque", a.Opaque))
+}
+
 // 4.6.4. Acknowledgment
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.4
 type Acknowledgment struct {
 	Opaque uint16 // Set to the Opaque value of the Acknowledgment Request that prompted this Acknowledgment.
+}
+
+func (a *Acknowledgment) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("opaque", a.Opaque))
 }
 
 // 4.6.5. Hello
@@ -115,6 +133,20 @@ type Hello struct {
 	Timestamp *TimestampHello
 }
 
+func (h *Hello) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.Any("flags", h.Flags),
+		slog.Any("seqno", h.Seqno),
+		slog.Any("intv", h.Interval),
+	}
+
+	if h.Timestamp != nil {
+		attrs = append(attrs, slog.Any("timestamp", *h.Timestamp))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
 // 4.6.6. IHU
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.6
 type IHU struct {
@@ -126,16 +158,41 @@ type IHU struct {
 	Timestamp *TimestampIHU
 }
 
+func (i *IHU) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.Any("rxcost", i.RxCost),
+		slog.Duration("intv", i.Interval),
+		slog.Any("addr", i.Address),
+	}
+
+	if i.Timestamp != nil {
+		attrs = append(attrs,
+			slog.Any("ts", *i.Timestamp))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
 // 4.6.7. Router-Id
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.7
 type RouterIDValue struct {
 	RouterID RouterID // The router-id for routes advertised in subsequent Update TLVs. This MUST NOT consist of all zeroes or all ones.
 }
 
+func (r *RouterIDValue) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("rid", hex.EncodeToString(r.RouterID[:])))
+}
+
 // 4.6.8. Next Hop
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.8
 type NextHop struct {
 	NextHop netip.Addr // The next-hop address advertised by subsequent Update TLVs for this address family.
+}
+
+func (n *NextHop) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("nh", n.NextHop))
 }
 
 // 4.6.9. Update
@@ -156,6 +213,25 @@ type Update struct {
 	SourcePrefix *Prefix
 }
 
+func (u *Update) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.Any("flags", u.Flags),
+		slog.Duration("intv", u.Interval),
+		slog.Any("seqno", u.Seqno),
+		slog.Any("metric", u.Metric),
+		slog.Any("pfx", u.Prefix),
+		slog.Any("rid", u.RouterID),
+		slog.Any("nh", u.NextHop),
+	}
+
+	if u.SourcePrefix != nil {
+		attrs = append(attrs,
+			slog.Any("src_prefix", *u.SourcePrefix))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
 // 4.6.10. Route Request
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.10
 type RouteRequest struct {
@@ -163,6 +239,19 @@ type RouteRequest struct {
 
 	// Sub-TLVs
 	SourcePrefix *Prefix
+}
+
+func (r *RouteRequest) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.Any("pfx", r.Prefix),
+	}
+
+	if r.SourcePrefix != nil {
+		attrs = append(attrs,
+			slog.Any("src_pfx", *r.SourcePrefix))
+	}
+
+	return slog.GroupValue(attrs...)
 }
 
 // 4.6.11. Seqno Request
@@ -177,10 +266,31 @@ type SeqnoRequest struct {
 	SourcePrefix *Prefix
 }
 
+func (s *SeqnoRequest) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.Any("seqno", s.Seqno),
+		slog.Any("hopcnt", s.HopCount),
+		slog.Any("rid", s.RouterID),
+		slog.Any("pfx", s.Prefix),
+	}
+
+	if s.SourcePrefix != nil {
+		attrs = append(attrs,
+			slog.Any("src_pfx", *s.SourcePrefix))
+	}
+
+	return slog.GroupValue(attrs...)
+}
+
 // 3.1.  Timestamp sub-TLV in Hello TLVs
 // https://datatracker.ietf.org/doc/html/draft-ietf-babel-rtt-extension-00#section-3.1
 type TimestampHello struct {
 	Transmit Timestamp
+}
+
+func (t *TimestampHello) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("tx", t.Transmit))
 }
 
 // 3.2.  Timestamp sub-TLV in IHU TLVs
@@ -188,6 +298,12 @@ type TimestampHello struct {
 type TimestampIHU struct {
 	Origin  Timestamp
 	Receive Timestamp
+}
+
+func (t *TimestampIHU) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Any("orign", t.Origin),
+		slog.Any("rx", t.Receive))
 }
 
 func IsUrgent(v Value) bool {
