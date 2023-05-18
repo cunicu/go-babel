@@ -430,7 +430,7 @@ func (p *Parser) routerID(b []byte) ([]byte, RouterID, error) {
 		return nil, RouterIDUnspecified, ErrInvalidRouterID
 	}
 
-	return b, rid, nil
+	return b[8:], rid, nil
 }
 
 func (p *Parser) appendRouterID(b []byte, rid RouterID) []byte {
