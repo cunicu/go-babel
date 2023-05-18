@@ -131,7 +131,7 @@ func (q *Queue) popIf(test func(v any) bool) (proto.Value, bool) {
 	defer q.mu.Unlock()
 
 	v := q.values.Front()
-	if v != nil {
+	if v == nil {
 		return nil, true
 	}
 
