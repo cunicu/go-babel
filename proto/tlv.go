@@ -107,9 +107,9 @@ type Acknowledgment struct {
 // 4.6.5. Hello
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.5
 type Hello struct {
-	Flags    uint16        // The individual bits of this field specify special handling of this TLV (see FlagHello*).
-	Seqno    uint16        // If the Unicast flag is set, this is the value of the sending node's outgoing Unicast Hello seqno for this neighbour. Otherwise, it is the sending node's outgoing Multicast Hello seqno for this interface.
-	Interval time.Duration // If nonzero, this is an upper bound, on the time after which the sending node will send a new scheduled Hello TLV with the same setting of the Unicast flag. If this is 0, then this Hello represents an unscheduled Hello and doesn't carry any new information about times at which Hellos are sent.
+	Flags    uint16         // The individual bits of this field specify special handling of this TLV (see FlagHello*).
+	Seqno    SequenceNumber // If the Unicast flag is set, this is the value of the sending node's outgoing Unicast Hello seqno for this neighbour. Otherwise, it is the sending node's outgoing Multicast Hello seqno for this interface.
+	Interval time.Duration  // If nonzero, this is an upper bound, on the time after which the sending node will send a new scheduled Hello TLV with the same setting of the Unicast flag. If this is 0, then this Hello represents an unscheduled Hello and doesn't carry any new information about times at which Hellos are sent.
 
 	// Sub-TLVs
 	Timestamp *TimestampHello
@@ -144,7 +144,7 @@ type Update struct {
 	Flags    uint8          // The individual bits of this field specify special handling of this TLV (see FlagUpdate*).
 	Interval Interval       // An upper bound, expressed in centiseconds, on the time after which the sending node will send a new update for this prefix. This MUST NOT be 0. The receiving node will use this value to compute a hold time for the route table entry. The value FFFF hexadecimal (infinity) expresses that this announcement will not be repeated unless a request is received (Section 3.8.2.3).
 	Seqno    SequenceNumber // The originator's sequence number for this update.
-	Metric   uint16         // The sender's metric for this route. The value FFFF hexadecimal (infinity) means that this is a route retraction.
+	Metric   Metric         // The sender's metric for this route. The value FFFF hexadecimal (infinity) means that this is a route retraction.
 	Prefix   netip.Prefix   // The prefix being advertised. This field's size is (Plen/8 - Omitted) rounded upwards.
 
 	// The following fields are not actually encoded in an update TLV.
@@ -168,10 +168,10 @@ type RouteRequest struct {
 // 4.6.11. Seqno Request
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.11
 type SeqnoRequest struct {
-	Seqno    uint16       // The sequence number that is being requested.
-	HopCount uint8        // The maximum number of times that this TLV may be forwarded, plus 1. This MUST NOT be 0.
-	RouterID uint64       // The Router-Id that is being requested. This MUST NOT consist of all zeroes or all ones.
-	Prefix   netip.Prefix // The prefix being requested. This field's size is Plen/8 rounded upwards.
+	Seqno    SequenceNumber // The sequence number that is being requested.
+	HopCount uint8          // The maximum number of times that this TLV may be forwarded, plus 1. This MUST NOT be 0.
+	RouterID RouterID       // The Router-Id that is being requested. This MUST NOT consist of all zeroes or all ones.
+	Prefix   netip.Prefix   // The prefix being requested. This field's size is Plen/8 rounded upwards.
 
 	// Sub-TLVs
 	SourcePrefix *Prefix
