@@ -14,14 +14,13 @@
         "type": "go",
         "request": "launch",
         "mode": "test",
-        "program": "${workspaceFolder}",
+        "program": "${workspaceFolder}/${relativeFileDirname}",
         "asRoot": true,
         "console": "integratedTerminal",
         "args": [
-            "-test.run",
-            "TestMain",
+            "-ginkgo.vv",
+            // "-ginkgo.focus", "^SomeTest$"
             "--",
-            "-vv"
         ]
     }
     ]
