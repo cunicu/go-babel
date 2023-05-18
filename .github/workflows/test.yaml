@@ -30,17 +30,21 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: ginkgo run
-        -r
-        --procs=4
-        --compilers=4
-        --randomize-all
-        --randomize-suites
-        --keep-going
-        --cover
-        --coverprofile=cover.profile
-        --race
-        --trace
-        --json-report=report.json
-        --timeout=10m
+    - name: Run tests
+      run: sudo --preserve-env env "PATH=$PATH"
+        ginkgo run
+          -r
+          --procs=4
+          --compilers=4
+          --randomize-all
+          --randomize-suites
+          --keep-going
+          --cover
+          --coverprofile=cover.profile
+          --race
+          --trace
+          --json-report=report.json
+          --timeout=10m
+      env:
+        # Pass token via environment variable to avoid GitHub API rate-limit
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
