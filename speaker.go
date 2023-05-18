@@ -178,7 +178,7 @@ func (s *Speaker) runReadLoop() {
 			continue
 		}
 
-		p := proto.Parser{}
+		p := proto.NewParser()
 
 		_, pkt, err := p.Packet(buf[:n])
 		if err != nil {

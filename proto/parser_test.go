@@ -14,7 +14,7 @@ import (
 var _ = Context("Parser", func() {
 	var p *Parser
 	BeforeEach(func() {
-		p = &Parser{}
+		p = NewParser()
 	})
 
 	Describe("Types", func() {

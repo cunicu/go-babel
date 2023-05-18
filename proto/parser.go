@@ -24,6 +24,12 @@ type Parser struct {
 	CurrentRouterID      RouterID
 }
 
+func NewParser() *Parser {
+	p := &Parser{}
+	p.Reset()
+	return p
+}
+
 // Reset resets the internal parser state
 func (p *Parser) Reset() {
 	p.CurrentDefaultPrefix = map[AddressEncoding]Address{}
