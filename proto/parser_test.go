@@ -108,13 +108,13 @@ var _ = Context("Parser", func() {
 		func(addr string, len int, expAE uint8) {
 			v1 := netip.MustParseAddr(addr)
 
-			b, ae := p.appendAddress(nil, v1)
+			b, ae := p.appendAddress(nil, v1, -1)
 			Expect(b).To(HaveLen(len))
 			Expect(ae).To(Equal(expAE))
 
-			b, v2, err := p.address(b, ae)
+			b, v2, err := p.address(b, ae, 0, -1)
 			Expect(err).To(Succeed())
-			Expect(v2).To(Equal(v1))
+			Expect(v2).To(Equal(v1), "Addresses are not equal: %v != %v", v1, v2)
 			Expect(b).To(BeEmpty())
 		},
 		Entry("AddressEncodingIPv4", "1.1.1.1", 4, AddressEncodingIPv4),
@@ -137,8 +137,8 @@ var _ = Context("Parser", func() {
 			Expect(v2).To(Equal(v1))
 			Expect(b).To(BeEmpty())
 		},
-		Entry("AddressEncodingIPv4", "1.1.0.0/16", 4, AddressEncodingIPv4, uint8(16)),
-		Entry("AddressEncodingIPv6", "fd3d:bd4f:9738::/48", 16, AddressEncodingIPv6, uint8(48)),
+		Entry("AddressEncodingIPv4", "1.1.0.0/16", 2, AddressEncodingIPv4, uint8(16)),
+		Entry("AddressEncodingIPv6", "fd3d:bd4f:9738::/48", 6, AddressEncodingIPv6, uint8(48)),
 		Entry("AddressEncodingWildcard", "::/0", 0, AddressEncodingWildcard, uint8(0)),
 		Entry("AddressEncodingIPv6LinkLocal", "fe80::1234:5678:90AB:CDEF/128", 8, AddressEncodingIPv6LinkLocal, uint8(128)),
 	)

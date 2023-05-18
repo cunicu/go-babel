@@ -6,6 +6,7 @@ package proto
 import (
 	"encoding/binary"
 	"errors"
+	"math"
 	"net"
 	"net/netip"
 	"time"
@@ -458,35 +459,70 @@ func (p *Parser) addressLength(addr Address) int {
 	}
 }
 
-func (p *Parser) address(b []byte, ae AddressEncoding) ([]byte, Address, error) {
+func (p *Parser) address(b []byte, ae AddressEncoding, omitted uint8, plen int8) ([]byte, Address, error) {
 	switch ae {
 	case AddressEncodingWildcard:
 		return b, netip.IPv6Unspecified(), nil
 
-	case AddressEncodingIPv4:
-		if len(b) < net.IPv4len {
-			return nil, Address{}, ErrTooShort
-		} else if a, ok := netip.AddrFromSlice(b[:net.IPv4len]); !ok {
-			return nil, Address{}, ErrInvalidAddress
+	case AddressEncodingIPv4, AddressEncodingIPv6:
+		var alen, rplen uint8
+		if ae == AddressEncodingIPv6 {
+			alen = net.IPv6len
 		} else {
-			return b[net.IPv4len:], a, nil
+			alen = net.IPv4len
 		}
 
-	case AddressEncodingIPv6:
-		if len(b) < net.IPv6len {
+		if plen < 0 {
+			rplen = alen * 8
+		} else {
+			rplen = uint8(plen)
+		}
+
+		blen := rplen/8 - omitted
+		if rplen%8 != 0 { // Round upwards
+			blen++
+		}
+
+		if len(b) < int(blen) {
 			return nil, Address{}, ErrTooShort
-		} else if a, ok := netip.AddrFromSlice(b[:net.IPv6len]); !ok {
+		}
+
+		abuf := make([]byte, alen)
+
+		if omitted > 0 {
+			dpfx, ok := p.CurrentDefaultPrefix[ae]
+			if !ok {
+				return nil, Address{}, ErrMissingDefaultPrefix
+			}
+
+			copy(abuf[0:], dpfx.AsSlice()[:omitted])
+		}
+
+		copy(abuf[omitted:], b[:blen])
+
+		// If plen is not a multiple of 8, then any bits beyond plen
+		// (i.e., the low-order (8 - plen % 8) bits of the last octet) are cleared
+		if mod := rplen % 8; mod != 0 {
+			mask := math.MaxUint8 << (8 - mod)
+			abuf[rplen/8] &= uint8(mask)
+		}
+
+		if a, ok := netip.AddrFromSlice(abuf); !ok {
 			return nil, Address{}, ErrInvalidAddress
 		} else {
-			return b[net.IPv6len:], a, nil
+			return b[blen:], a, nil
 		}
 
 	case AddressEncodingIPv6LinkLocal:
 		if len(b) < 8 {
 			return nil, Address{}, ErrTooShort
 		}
-		c := append([]byte("\xfe\x80\x00\x00\x00\x00\x00\x00"), b[:8]...)
-		if a, ok := netip.AddrFromSlice(c); !ok {
+
+		abuf := make([]byte, 16)
+		copy(abuf[0:], []byte{0xfe, 0x80})
+		copy(abuf[8:], b[:8])
+
+		if a, ok := netip.AddrFromSlice(abuf); !ok {
 			return nil, Address{}, ErrInvalidAddress
 		} else {
 			return b[8:], a, nil
@@ -497,7 +533,7 @@ func (p *Parser) address(b []byte, ae AddressEncoding) ([]byte, Address, error) 
 	}
 }
 
-func (p *Parser) appendAddress(b []byte, addr Address) ([]byte, AddressEncoding) {
+func (p *Parser) appendAddress(b []byte, addr Address, plen int8) ([]byte, AddressEncoding) {
 	ae := addressEncoding(&addr)
 
 	switch ae {
@@ -506,12 +542,27 @@ func (p *Parser) appendAddress(b []byte, addr Address) ([]byte, AddressEncoding)
 		return append(b, a[8:]...), ae
 	case AddressEncodingWildcard:
 		return b, ae
-	case AddressEncodingIPv4:
-		a := addr.As4()
-		return append(b, a[:]...), ae
-	case AddressEncodingIPv6:
-		a := addr.As16()
-		return append(b, a[:]...), ae
+	case AddressEncodingIPv4, AddressEncodingIPv6:
+		var alen, rplen uint8
+		if ae == AddressEncodingIPv6 {
+			alen = net.IPv6len
+		} else {
+			alen = net.IPv4len
+		}
+
+		if plen < 0 {
+			rplen = alen * 8
+		} else {
+			rplen = uint8(plen)
+		}
+
+		blen := rplen / 8
+		if rplen%8 != 0 { // Round upwards
+			blen++
+		}
+
+		a := addr.AsSlice()
+		return append(b, a[:blen]...), ae
 	default:
 		panic(ErrInvalidAddress)
 	}
@@ -521,11 +572,20 @@ func (p *Parser) appendAddress(b []byte, addr Address) ([]byte, AddressEncoding)
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.1.5
 
 func (p *Parser) prefixLength(pfx Prefix, compress bool) int {
-	return p.addressLength(pfx.Addr())
+	blen := pfx.Bits() / 8
+	if pfx.Bits()%8 != 0 {
+		blen++
+	}
+
+	// if compress {
+	// TODO: Support prefix compression
+	// }
+
+	return blen
 }
 
 func (p *Parser) prefix(b []byte, ae AddressEncoding, plen, omitted uint8) ([]byte, Prefix, error) {
-	b, addr, err := p.address(b, ae)
+	b, addr, err := p.address(b, ae, omitted, int8(plen))
 	if err != nil {
 		return nil, Prefix{}, err
 	}
@@ -535,7 +595,7 @@ func (p *Parser) prefix(b []byte, ae AddressEncoding, plen, omitted uint8) ([]by
 
 func (p *Parser) appendPrefix(b []byte, pfx Prefix, compress bool) ([]byte, AddressEncoding, uint8, uint8) {
 	// TODO: Support prefix compression for update TLVs
-	b, ae := p.appendAddress(b, pfx.Addr())
+	b, ae := p.appendAddress(b, pfx.Addr(), int8(pfx.Bits()))
 
 	return b, ae, uint8(pfx.Bits()), 0
 }
@@ -691,7 +751,7 @@ func (p *Parser) ihu(b []byte) ([]byte, *IHU, error) {
 	if b, v.Interval, err = p.interval(b); err != nil {
 		return nil, nil, err
 	}
-	if b, v.Address, err = p.address(b, ae); err != nil {
+	if b, v.Address, err = p.address(b, ae, 0, -1); err != nil {
 		return nil, nil, err
 	}
 
@@ -722,7 +782,7 @@ func (p *Parser) appendIHU(b []byte, v *IHU) []byte {
 	b = p.appendUint8(b, 0) // Reserved
 	b = p.appendUint16(b, v.RxCost)
 	b = p.appendInterval(b, v.Interval)
-	b, ae := p.appendAddress(b, v.Address)
+	b, ae := p.appendAddress(b, v.Address, -1)
 
 	b[o+0] = ae
 
@@ -777,7 +837,7 @@ func (p *Parser) nextHop(b []byte) ([]byte, *NextHop, error) {
 	if b, _, err = p.uint8(b); err != nil { // Reserved
 		return nil, nil, err
 	}
-	if b, v.NextHop, err = p.address(b, ae); err != nil {
+	if b, v.NextHop, err = p.address(b, ae, 0, -1); err != nil {
 		return nil, nil, err
 	}
 
@@ -788,7 +848,7 @@ func (p *Parser) appendNextHop(b []byte, v *NextHop) []byte {
 	o := len(b)
 	b = p.appendUint8(b, 0) // Placeholder: ae
 	b = p.appendUint8(b, 0) // Reserved
-	b, ae := p.appendAddress(b, v.NextHop)
+	b, ae := p.appendAddress(b, v.NextHop, -1)
 
 	b[o+0] = ae
 
