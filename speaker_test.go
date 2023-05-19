@@ -4,6 +4,7 @@
 package babel_test
 
 import (
+	"fmt"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -23,13 +24,17 @@ func (h *mockNeighbourHandler) NeighbourAdded(n *babel.Neighbour) {
 
 func (h *mockNeighbourHandler) NeighbourRemoved(n *babel.Neighbour) {}
 
-var _ = Context("Speaker", func() {
+var _ = Context("Speaker", Label("integration"), func() {
 	var err error
 	var n *g.Network
 
 	var s1, s2 *babel.Speaker
 
 	BeforeEach(func() {
+		if err := g.CheckCaps(); err != nil {
+			Skip(fmt.Sprintf("%s", err))
+		}
+
 		n, err = g.NewNetwork("")
 		Expect(err).To(Succeed())
 	})

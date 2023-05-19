@@ -9,6 +9,7 @@ on:
 
 jobs:
   integration:
+    name: Integration Tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -25,14 +26,13 @@ jobs:
 
     - name: Install system dependencies
       run: sudo apt-get install -y
-            libpcap-dev
+        libpcap-dev
 
     - name: Run integration tests
-      run: >
-        sudo --preserve-env env "PATH=$PATH"
+      run: sudo --preserve-env env "PATH=$PATH"
         ginkgo run
           -r
-          --label-filter="integration"
+          --label-filter='integration'
           --procs=4
           --compilers=4
           --randomize-all
@@ -56,6 +56,7 @@ jobs:
         flags: integration
 
   unit:
+    name: Unit tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -75,22 +76,21 @@ jobs:
             libpcap-dev
 
     - name: Run unit tests
-      run: >
-        ginkgo run
-          -r
-          --label-filter="!integration"
-          --procs=4
-          --compilers=4
-          --randomize-all
-          --randomize-suites
-          --keep-going
-          --cover
-          --coverpkg=./...
-          --coverprofile=unit_cover.profile
-          --race
-          --trace
-          --json-report=report.json
-          --timeout=10m
+      run: ginkgo run
+        -r
+        --label-filter='!integration'
+        --procs=4
+        --compilers=4
+        --randomize-all
+        --randomize-suites
+        --keep-going
+        --cover
+        --coverpkg=./...
+        --coverprofile=unit_cover.profile
+        --race
+        --trace
+        --json-report=report.json
+        --timeout=10m
     
     - name: Report unit test coverage to Codecov
       uses: codecov/codecov-action@v3
