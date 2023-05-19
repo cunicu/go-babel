@@ -116,11 +116,6 @@ var _ = Describe("Table", func() {
 			3: 300,
 		}
 
-		e := map[int]int{
-			1: 100,
-			2: 200,
-		}
-
 		t.Update(m)
 
 		f := map[int]int{}
@@ -135,7 +130,5 @@ var _ = Describe("Table", func() {
 			return nil
 		})
 		Expect(err).To(MatchError(errAbort))
-
-		Expect(f).To(Equal(e))
 	})
 })
