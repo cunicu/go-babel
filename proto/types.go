@@ -119,3 +119,11 @@ func RouterIDFromAddr(addr netip.Addr) RouterID {
 
 	return i
 }
+
+func SeqnoDistance(a, b SequenceNumber) int16 {
+	return (int16)(b - a)
+}
+
+func SeqnoLess(a, b SequenceNumber) bool {
+	return SeqnoDistance(a, b) > 0
+}
