@@ -39,7 +39,7 @@ var _ = Context("Speaker", func() {
 		Expect(err).To(Succeed())
 	})
 
-	FIt("discover neighbours", func() {
+	It("discover neighbours", func() {
 		sw, err := n.AddSwitch("sw1")
 		Expect(err).To(Succeed())
 
