@@ -60,11 +60,11 @@ const (
 // Babel Address Encodings
 // https://www.iana.org/assignments/babel/babel.xhtml#ae
 const (
-	AddressEncodingWildcard      AddressEncoding = 0 // RFC8966: The value is 0 octets long.
-	AddressEncodingIPv4          AddressEncoding = 1 // RFC8966: Compression is allowed. 4 octets or less.
-	AddressEncodingIPv6          AddressEncoding = 2 // RFC8966: Compression is allowed. 16 octets or less.
-	AddressEncodingIPv6LinkLocal AddressEncoding = 3 // RFC8966: Compression is not allowed. The value is 8 octets long, a prefix of fe80::/64 is implied.
-	AddressEncodingIPv4inIPv6    AddressEncoding = 4 // RFC9229: IPv4 Routes with an IPv6 Next Hop
+	AddressEncodingWildcard      AddressEncoding = 0 // RFC 8966: The value is 0 octets long.
+	AddressEncodingIPv4          AddressEncoding = 1 // RFC 8966: Compression is allowed. 4 octets or less.
+	AddressEncodingIPv6          AddressEncoding = 2 // RFC 8966: Compression is allowed. 16 octets or less.
+	AddressEncodingIPv6LinkLocal AddressEncoding = 3 // RFC 8966: Compression is not allowed. The value is 8 octets long, a prefix of fe80::/64 is implied.
+	AddressEncodingIPv4inIPv6    AddressEncoding = 4 // RFC 9229: IPv4 Routes with an IPv6 Next Hop
 )
 
 // GenerateRouterID generates a random router ID

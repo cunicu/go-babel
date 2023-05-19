@@ -17,9 +17,9 @@ import (
 
 const (
 	// TrafficClassNetworkControl represents a class selector code-point
-	// as defined by RFC2474.
+	// as defined by RFC 2474.
 	// Routing protocols are recommended to use the __network control_ service class (CS6)
-	// as recommended by RFC4594.
+	// as recommended by RFC 4594.
 	// We shift it by 2 bits to account for the ECN bits of the traffic class octet.
 	//
 	// See:

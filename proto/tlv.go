@@ -27,26 +27,26 @@ type SubValue any
 // Babel TLV Types
 // https://www.iana.org/assignments/babel/babel.xhtml#tlv-types
 const (
-	TypePad1                  ValueType = iota // RFC8966
-	TypePadN                                   // RFC8966
-	TypeAcknowledgmentRequest                  // RFC8966
-	TypeAcknowledgment                         // RFC8966
-	TypeHello                                  // RFC8966
-	TypeIHU                                    // RFC8966
-	TypeRouterID                               // RFC8966
-	TypeNextHop                                // RFC8966
-	TypeUpdate                                 // RFC8966
-	TypeRouteRequest                           // RFC8966
-	TypeSeqnoRequest                           // RFC8966
-	TypeTSPC                                   // RFC7298
-	TypeHMAC                                   // RFC7298
+	TypePad1                  ValueType = iota // RFC 8966
+	TypePadN                                   // RFC 8966
+	TypeAcknowledgmentRequest                  // RFC 8966
+	TypeAcknowledgment                         // RFC 8966
+	TypeHello                                  // RFC 8966
+	TypeIHU                                    // RFC 8966
+	TypeRouterID                               // RFC 8966
+	TypeNextHop                                // RFC 8966
+	TypeUpdate                                 // RFC 8966
+	TypeRouteRequest                           // RFC 8966
+	TypeSeqnoRequest                           // RFC 8966
+	TypeTSPC                                   // RFC 7298
+	TypeHMAC                                   // RFC 7298
 	_                                          // previously used in an early version of draft-ietf-babel-source-specific
 	_                                          // previously used in an early version of draft-ietf-babel-source-specific
 	_                                          // previously used in an early version of draft-ietf-babel-source-specific
-	TypeMAC                                    // RFC8967
-	TypePC                                     // RFC8967
-	TypeChallengeRequest                       // RFC8967
-	TypeChallengeReply                         // RFC8967
+	TypeMAC                                    // RFC 8967
+	TypePC                                     // RFC 8967
+	TypeChallengeRequest                       // RFC 8967
+	TypeChallengeReply                         // RFC 8967
 
 	// TypeInvalid is specified by any RFC and just used internal to
 	// represent an invalid type
@@ -56,12 +56,12 @@ const (
 // Babel Sub-TLV Types
 // https://www.iana.org/assignments/babel/babel.xhtml#sub-tlv-types
 const (
-	SubTypePad1      ValueType = iota // RFC8966
-	SubTypePadN                       // RFC8966
+	SubTypePad1      ValueType = iota // RFC 8966
+	SubTypePadN                       // RFC 8966
 	SubTypeDiversity                  // draft-chroboczek-babel-diversity-routing
 	SubTypeTimestamp                  // draft-jonglez-babel-rtt-extension
 
-	SubTypeSourcePrefix ValueType = 128 //	RFC9079
+	SubTypeSourcePrefix ValueType = 128 //	RFC 9079
 )
 
 // Flags for Hello TLV
