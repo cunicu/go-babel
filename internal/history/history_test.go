@@ -59,6 +59,10 @@ var _ = Describe("Vector", func() {
 		Entry("case 16: missed and dead", 2, 3, false, 1, 2, 3, 4, 5, Missed, Missed),
 	)
 
+	It("Empty", func() {
+		Expect(v.Empty()).To(BeTrue())
+	})
+
 	It("detects reset", func() {
 		resetted := v.Update(100)
 		Expect(resetted).To(BeTrue())
