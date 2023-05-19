@@ -53,20 +53,6 @@ func (t *Table[K, V]) ForEach(cb func(k K, v V) error) error {
 	return nil
 }
 
-// For runs the provided callback for a single entry of the table
-// while keeping the lock on the table.
-func (t *Table[K, V]) For(k K, cb func(v V) error) (bool, error) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	v, ok := t.Lookup(k)
-	if !ok {
-		return ok, nil
-	}
-
-	return ok, cb(v)
-}
-
 func (t *Table[K, V]) Clear() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
