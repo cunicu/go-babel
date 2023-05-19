@@ -43,3 +43,30 @@ func (t *Table[K, V]) Foreach(cb func(k K, v V) error) error {
 
 	return nil
 }
+
+func (t *Table[K, V]) Clear() {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	t.kvs = map[K]V{}
+}
+
+func (t *Table[K, V]) Len() int {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	return len(t.kvs)
+}
+
+func (t *Table[K, V]) Empty() bool {
+	return t.Len() == 0
+}
+
+func (t *Table[K, V]) Update(m map[K]V) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	for k, v := range m {
+		t.kvs[k] = v
+	}
+}
