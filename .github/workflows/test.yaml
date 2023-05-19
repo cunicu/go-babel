@@ -8,7 +8,7 @@ on:
 - pull_request
 
 jobs:
-  build:
+  integration:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -27,13 +27,12 @@ jobs:
       run: sudo apt-get install -y
             libpcap-dev
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Run tests
-      run: sudo --preserve-env env "PATH=$PATH"
+    - name: Run integration tests
+      run: >
+        sudo --preserve-env env "PATH=$PATH"
         ginkgo run
           -r
+          --label-filter="integration"
           --procs=4
           --compilers=4
           --randomize-all
@@ -41,7 +40,7 @@ jobs:
           --keep-going
           --cover
           --coverpkg=./...
-          --coverprofile=cover.profile
+          --coverprofile=integration_cover.profile
           --race
           --trace
           --json-report=report.json
@@ -50,7 +49,51 @@ jobs:
         # Pass token via environment variable to avoid GitHub API rate-limit
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Report test coverage to Codecov
+    - name: Report integration test coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        files: cover.profile
+        files: integration_cover.profile
+        flags: integration
+
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: go.mod
+        check-latest: true
+      
+    - name: Install Go dependencies
+      run: |
+        go install github.com/onsi/ginkgo/v2/ginkgo@v2.9.0
+      
+    - name: Install system dependencies
+      run: sudo apt-get install -y
+            libpcap-dev
+
+    - name: Run unit tests
+      run: >
+        ginkgo run
+          -r
+          --label-filter="!integration"
+          --procs=4
+          --compilers=4
+          --randomize-all
+          --randomize-suites
+          --keep-going
+          --cover
+          --coverpkg=./...
+          --coverprofile=unit_cover.profile
+          --race
+          --trace
+          --json-report=report.json
+          --timeout=10m
+    
+    - name: Report unit test coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: unit_cover.profile
+        flags: unit
