@@ -12,7 +12,7 @@ import (
 // https://datatracker.ietf.org/doc/html/rfc8966#section-appendix.b
 
 type Parameters struct {
-	IHUHoldTime            time.Duration
+	IHUHoldTimeFactor      float32
 	IHUInterval            time.Duration
 	InitialRequestTimeout  time.Duration
 	MulticastHelloInterval time.Duration
@@ -21,11 +21,11 @@ type Parameters struct {
 	UnicastHelloInterval   time.Duration
 	UpdateInterval         time.Duration
 	UrgentTimeout          time.Duration
-	LinkCost               int
+	NominalLinkCost        uint16
 }
 
 const (
-	DefaultIHUInterval            = 12 // 3 * DefaultMulticastHelloInterval
+	DefaultIHUInterval            = 12 * time.Second // 3 * DefaultMulticastHelloInterval
 	DefaultInitialRequestTimeout  = 2 * time.Second
 	DefaultMulticastHelloInterval = 4 * time.Second
 	DefaultRouteExpiryTime        = 56 // 3.5 * DefaultUpdateInterval
@@ -33,6 +33,9 @@ const (
 	DefaultUnicastHelloInterval   = 0                // infinitive, no Hellos are send
 	DefaultUpdateInterval         = 16 * time.Second // 4 * DefaultMulticastHelloInterval
 	DefaultUrgentTimeout          = 200 * time.Millisecond
+
+	DefaultIHUHoldTimeFactor = 3.5 // times the advertised IHU interval
+	DefaultWiredLinkCost     = 96
 )
 
 var DefaultParameters = Parameters{
@@ -44,7 +47,7 @@ var DefaultParameters = Parameters{
 	InitialRequestTimeout:  DefaultInitialRequestTimeout,
 	UrgentTimeout:          DefaultUrgentTimeout,
 	SourceGCTime:           DefaultSourceGCTime,
-	LinkCost:               0, // TODO: estimated using ETX on wireless links; 2-out-of-3 with C=96 on wired links.
+	NominalLinkCost:        DefaultWiredLinkCost, // TODO: estimated using ETX on wireless links; 2-out-of-3 with C=96 on wired links.
 }
 
 // 5. IANA Considerations

@@ -44,6 +44,10 @@ func (c *SpeakerConfig) SetDefaults() error {
 	if c.Parameters == nil {
 		dp := DefaultParameters
 		c.Parameters = &dp
+	} else {
+		if c.Parameters.NominalLinkCost == 0 {
+			c.Parameters.NominalLinkCost = DefaultWiredLinkCost
+		}
 	}
 
 	if c.Logger == nil {

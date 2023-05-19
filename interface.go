@@ -55,13 +55,15 @@ func (s *Speaker) newInterface(index int) (*Interface, error) {
 	}
 
 	i := &Interface{
-		Interface: intf,
-
-		multicast: s.config.Multicast,
-
+		Interface:  intf,
 		Neighbours: NewNeighbourTable(),
 
 		speaker: s,
+
+		multicast:           s.config.Multicast,
+		helloMulticastTimer: time.NewTicker(s.config.MulticastHelloInterval),
+		periodicUpdateTimer: time.NewTicker(s.config.UpdateInterval),
+
 		logger: s.config.Logger.With(
 			slog.String("intf", intf.Name)),
 	}
@@ -81,9 +83,6 @@ func (s *Speaker) newInterface(index int) (*Interface, error) {
 			return nil, fmt.Errorf("failed to join multicast group: %w", err)
 		}
 	}
-
-	i.helloMulticastTimer = time.NewTicker(i.speaker.config.MulticastHelloInterval)
-	i.periodicUpdateTimer = time.NewTicker(i.speaker.config.UpdateInterval)
 
 	go i.runTimers()
 
@@ -163,9 +162,9 @@ func (i *Interface) sendMulticastHello() error {
 }
 
 func (i *Interface) sendUpdate() error {
-	i.logger.Debug("Sending update")
-
-	i.sendValue(&proto.Update{}, i.speaker.config.MulticastHelloInterval/2)
+	// TODO: Implement sending of updates
+	// i.logger.Debug("Sending update")
+	// i.sendValue(&proto.Update{}, i.speaker.config.MulticastHelloInterval/2)
 
 	return nil
 }

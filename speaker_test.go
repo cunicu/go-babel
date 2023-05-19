@@ -4,6 +4,8 @@
 package babel_test
 
 import (
+	"time"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/stv0g/go-babel"
@@ -37,7 +39,7 @@ var _ = Context("Speaker", func() {
 		Expect(err).To(Succeed())
 	})
 
-	It("discover neighbours", func() {
+	FIt("discover neighbours", func() {
 		sw, err := n.AddSwitch("sw1")
 		Expect(err).To(Succeed())
 
@@ -72,8 +74,15 @@ var _ = Context("Speaker", func() {
 		})
 		Expect(err).To(Succeed())
 
-		<-handler.neighbours
-		<-handler.neighbours
+		By("Waiting until neighbour has been found")
+
+		n1 := <-handler.neighbours
+		n2 := <-handler.neighbours
+
+		By("Waiting until neighbour costs have been determined")
+
+		Eventually(func() uint16 { return n1.Cost() }, 100*time.Second, time.Second).Should(BeNumerically("<", 0xffff))
+		Eventually(func() uint16 { return n2.Cost() }, 100*time.Second, time.Second).Should(BeNumerically("<", 0xffff))
 
 		err = s1.Close()
 		Expect(err).To(Succeed())

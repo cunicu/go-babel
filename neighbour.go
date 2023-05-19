@@ -27,10 +27,7 @@ type Neighbour struct {
 
 	Address proto.Address
 
-	TxCost      uint16
-	RxCost      uint16
-	Cost        uint16
-	NominalCost uint16
+	TxCost uint16
 
 	helloUnicast   history.HelloHistory
 	helloMulticast history.HelloHistory
@@ -89,11 +86,12 @@ func (n *Neighbour) runTimers() {
 			}
 
 		case <-n.ihuTicker.C:
-			// if err := n.sendIHU(); err != nil {
-			// 	n.logger.Error("Failed to send IHU", err)
-			// }
+			if err := n.sendIHU(); err != nil {
+				n.logger.Error("Failed to send IHU", err)
+			}
 
 		case <-n.ihuTimeout.C:
+			n.logger.Warn("IHU deadline missed")
 			n.TxCost = 0xFFFF
 		}
 	}
@@ -108,15 +106,16 @@ func (n *Neighbour) onHello(hello *proto.Hello) {
 	} else {
 		n.helloMulticast.Update(hello.Seqno)
 	}
+
+	n.logger.Debug("Handled Hello", "rxcost", n.RxCost())
 }
 
 func (n *Neighbour) onIHU(ihu *proto.IHU) {
-	// IHU Hold Time is 3.5x the advertised interval
-	n.ihuTimeout.Reset(ihu.Interval * 7 / 2)
+	n.ihuTimeout.Reset(time.Duration(n.intf.speaker.config.IHUHoldTimeFactor * float32(ihu.Interval)))
 
 	n.TxCost = ihu.RxCost
 
-	n.updateCosts()
+	n.logger.Debug("Handled IHU", "txcost", n.TxCost, "rxcost", n.RxCost(), "cost", n.Cost())
 }
 
 func (n *Neighbour) onRouteRequest(rr *proto.RouteRequest) {
@@ -190,12 +189,9 @@ func (n *Neighbour) sendUnicastSeqnoRequest() error { //nolint:unused
 	return nil
 }
 
-// TODO: Use function
-//
-//nolint:unused
 func (n *Neighbour) sendIHU() error {
 	n.queue.SendValue(&proto.IHU{
-		RxCost:   n.RxCost,
+		RxCost:   n.RxCost(),
 		Address:  n.Address,
 		Interval: n.intf.speaker.config.IHUInterval,
 	}, n.intf.speaker.config.IHUInterval*3/5)
@@ -213,16 +209,18 @@ func (n *Neighbour) sendAcknowledgment(opaque uint16, interval time.Duration) er
 
 // A.2.1. k-out-of-j
 // See: https://datatracker.ietf.org/doc/html/rfc8966#section-a.2.1
-func (n *Neighbour) updateCosts() {
-	if n.helloUnicast.OutOf(2, 3) {
-		n.RxCost = n.NominalCost
+func (n *Neighbour) RxCost() uint16 {
+	if n.helloUnicast.OutOf(2, 3) || n.helloMulticast.OutOf(2, 3) {
+		return n.intf.speaker.config.NominalLinkCost
 	} else {
-		n.RxCost = 0xFFFF
+		return 0xFFFF
 	}
+}
 
-	if n.RxCost == 0xFFFF {
-		n.Cost = 0xFFFF
+func (n *Neighbour) Cost() uint16 {
+	if n.RxCost() == 0xFFFF {
+		return 0xFFFF
 	} else {
-		n.Cost = n.TxCost
+		return n.TxCost
 	}
 }
