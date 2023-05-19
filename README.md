@@ -9,7 +9,28 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/stv0g/go-babel.svg)](https://pkg.go.dev/github.com/stv0g/go-babel)
 </div>
 
-go-babel is an (incomplete) implementation of the [Babel routing protocol](https://www.irif.fr/~jch/software/babel/) ([RFC8966](https://datatracker.ietf.org/doc/html/rfc8966)) in the Go programming language.
+go-babel is an implementation of the [Babel routing protocol](https://www.irif.fr/~jch/software/babel/) in the Go programming language.
+
+## RFCs / Status
+
+go-babel aims at implementing the following RFCs and drafts:
+
+### Under implementation
+
+- [**RFC 8966:** The Babel Routing Protocol](https://datatracker.ietf.org/doc/html/rfc8966)
+
+### Planned
+
+- [**RFC 9229:** IPv4 Routes with an IPv6 Next Hop in the Babel Routing Protocol](https://datatracker.ietf.org/doc/rfc9079/)
+- [**RFC 9079:** Source-Specific Routing in the Babel Routing Protocol](https://datatracker.ietf.org/doc/rfc9079/)
+- [**RFC 8967:** MAC Authentication for the Babel Routing Protocol](https://datatracker.ietf.org/doc/rfc8967/)
+- [**RFC 8968:** Babel Routing Protocol over Datagram Transport Layer Security](https://datatracker.ietf.org/doc/rfc8968/)
+- [**draft-ietf-babel-mac-relaxed-04:** Relaxed Packet Counter Verification for Babel MAC Authentication](https://datatracker.ietf.org/doc/draft-ietf-babel-mac-relaxed/)
+- [**draft-ietf-babel-rtt-extension:** Delay-based Metric Extension for the Babel Routing Protocol](https://datatracker.ietf.org/doc/draft-ietf-babel-rtt-extension/)
+
+## Limitations
+
+- Link cost calculation is only supported for wired links using the 2-out-of-3 strategy. ETX is not (yet) supported.
 
 ## References
 
