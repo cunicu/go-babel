@@ -124,6 +124,14 @@ func SeqnoDistance(a, b SequenceNumber) int16 {
 	return (int16)(b - a)
 }
 
+func SeqnoAbsDistance(a, b SequenceNumber) int16 {
+	if d := SeqnoDistance(a, b); d > 0 {
+		return d
+	} else {
+		return -d
+	}
+}
+
 func SeqnoLess(a, b SequenceNumber) bool {
 	return SeqnoDistance(a, b) > 0
 }

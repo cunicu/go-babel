@@ -52,4 +52,9 @@ var _ = Context("Types", func() {
 		Entry("case 3", 0x0000, 0x0000),
 		Entry("case 4", 0x0100, 0x0100),
 	)
+
+	It("SeqnoAbsDistance", func() {
+		Expect(proto.SeqnoAbsDistance(0x0001, 0x0002)).To(Equal(int16(1)))
+		Expect(proto.SeqnoAbsDistance(0x0002, 0x0001)).To(Equal(int16(1)))
+	})
 })

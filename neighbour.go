@@ -20,21 +20,6 @@ import (
 // 3.2.4. The Neighbour Table
 // https://datatracker.ietf.org/doc/html/rfc8966#section-3.2.4
 
-type helloState struct {
-	history       history.Vector
-	expectedSeqNo proto.SequenceNumber
-}
-
-func (s *helloState) Update(v *proto.Hello) {
-	s.history.Update(v.Seqno, s.expectedSeqNo)
-
-	s.expectedSeqNo = v.Seqno + 1
-
-	// if v.Interval > 0 {
-	// 	s.ticker.Reset(v.Interval * 3 / 2)
-	// }
-}
-
 type Neighbour struct {
 	intf *Interface
 
@@ -47,8 +32,8 @@ type Neighbour struct {
 	Cost        uint16
 	NominalCost uint16
 
-	helloUnicast   helloState
-	helloMulticast helloState
+	helloUnicast   history.HelloHistory
+	helloMulticast history.HelloHistory
 
 	outgoingUnicastHelloSeqNo proto.SequenceNumber
 
@@ -119,9 +104,9 @@ func (n *Neighbour) onUpdate(upd *proto.Update) {
 
 func (n *Neighbour) onHello(hello *proto.Hello) {
 	if isUnicast := hello.Flags&proto.FlagHelloUnicast != 0; isUnicast {
-		n.helloUnicast.Update(hello)
+		n.helloUnicast.Update(hello.Seqno)
 	} else {
-		n.helloMulticast.Update(hello)
+		n.helloMulticast.Update(hello.Seqno)
 	}
 }
 
@@ -229,7 +214,11 @@ func (n *Neighbour) sendAcknowledgment(opaque uint16, interval time.Duration) er
 // A.2.1. k-out-of-j
 // See: https://datatracker.ietf.org/doc/html/rfc8966#section-a.2.1
 func (n *Neighbour) updateCosts() {
-	n.RxCost = n.helloUnicast.history.OutOf(12, 16, n.NominalCost)
+	if n.helloUnicast.OutOf(2, 3) {
+		n.RxCost = n.NominalCost
+	} else {
+		n.RxCost = 0xFFFF
+	}
 
 	if n.RxCost == 0xFFFF {
 		n.Cost = 0xFFFF
