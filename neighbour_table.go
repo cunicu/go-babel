@@ -25,7 +25,7 @@ func (t *NeighbourTable) Insert(n *Neighbour) {
 }
 
 func (t *NeighbourTable) Foreach(cb func(*Neighbour) error) error {
-	return (*table.Table[proto.Address, *Neighbour])(t).Foreach(func(k netip.Addr, v *Neighbour) error {
+	return (*table.Table[proto.Address, *Neighbour])(t).ForEach(func(k netip.Addr, v *Neighbour) error {
 		return cb(v)
 	})
 }

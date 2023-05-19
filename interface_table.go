@@ -20,5 +20,5 @@ func (t *InterfaceTable) Insert(i *Interface) {
 }
 
 func (t *InterfaceTable) Foreach(cb func(int, *Interface) error) error {
-	return (*table.Table[int, *Interface])(t).Foreach(cb)
+	return (*table.Table[int, *Interface])(t).ForEach(cb)
 }

@@ -33,6 +33,19 @@ var _ = Describe("Table", func() {
 		Expect(val).To(Equal(5))
 	})
 
+	It("can delete", func() {
+		t.Insert(4, 5)
+
+		val, ok := t.Lookup(4)
+		Expect(ok).To(BeTrue())
+		Expect(val).To(Equal(5))
+
+		t.Remove(4)
+
+		_, ok = t.Lookup(4)
+		Expect(ok).To(BeFalse())
+	})
+
 	It("can lookup non-existing key", func() {
 		_, ok := t.Lookup(100)
 		Expect(ok).To(BeFalse())
@@ -100,7 +113,7 @@ var _ = Describe("Table", func() {
 
 		f := map[int]int{}
 
-		err := t.Foreach(func(k, v int) error {
+		err := t.ForEach(func(k, v int) error {
 			f[k] = v
 			return nil
 		})
@@ -122,7 +135,7 @@ var _ = Describe("Table", func() {
 
 		errAbort := errors.New("abort here")
 
-		err := t.Foreach(func(k, v int) error {
+		err := t.ForEach(func(k, v int) error {
 			if k == 3 {
 				return errAbort
 			}

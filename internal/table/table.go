@@ -31,7 +31,16 @@ func (t *Table[K, V]) Insert(k K, v V) {
 	t.kvs[k] = v
 }
 
-func (t *Table[K, V]) Foreach(cb func(k K, v V) error) error {
+func (t *Table[K, V]) Remove(k K) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	delete(t.kvs, k)
+}
+
+// ForEach runs the provided callback for each entry
+// of the table while keeping the lock
+func (t *Table[K, V]) ForEach(cb func(k K, v V) error) error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -42,6 +51,20 @@ func (t *Table[K, V]) Foreach(cb func(k K, v V) error) error {
 	}
 
 	return nil
+}
+
+// For runs the provided callback for a single entry of the table
+// while keeping the lock on the table.
+func (t *Table[K, V]) For(k K, cb func(v V) error) (bool, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	v, ok := t.Lookup(k)
+	if !ok {
+		return ok, nil
+	}
+
+	return ok, cb(v)
 }
 
 func (t *Table[K, V]) Clear() {
