@@ -35,37 +35,37 @@ var _ = Describe("Deadline", func() {
 
 	It("can be stopped when not armed", func() {
 		d.Stop()
-		Expect(d.Expired).To(BeFalse())
+		Expect(d.Expired()).To(BeFalse())
 	})
 
 	It("can be stopped when armed", func() {
 		d.Reset(10 * time.Millisecond)
 		d.Stop()
 		Consistently(d.C).ShouldNot(Receive())
-		Expect(d.Expired).To(BeFalse())
+		Expect(d.Expired()).To(BeFalse())
 	})
 
 	It("does not expire when not set", func() {
 		Consistently(d.C).ShouldNot(Receive())
-		Expect(d.Expired).To(BeFalse())
+		Expect(d.Expired()).To(BeFalse())
 	})
 
 	It("should expire when set", func() {
 		d.Reset(10 * time.Millisecond)
 		Eventually(d.C).Should(Receive())
-		Expect(d.Expired).To(BeTrue())
+		Expect(d.Expired()).To(BeTrue())
 	})
 
 	It("can be re-armed", func() {
 		d.Reset(10 * time.Millisecond)
 		Eventually(d.C).Should(Receive())
-		Expect(d.Expired).To(BeTrue())
+		Expect(d.Expired()).To(BeTrue())
 
 		d.Reset(10 * time.Millisecond)
-		Expect(d.Expired).To(BeFalse())
+		Expect(d.Expired()).To(BeFalse())
 
 		Eventually(d.C).Should(Receive())
-		Expect(d.Expired).To(BeTrue())
+		Expect(d.Expired()).To(BeTrue())
 	})
 
 	It("can be reset while armed", func() {

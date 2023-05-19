@@ -4,13 +4,14 @@
 package deadline
 
 import (
+	"sync/atomic"
 	"time"
 )
 
 type Deadline struct {
 	C chan any
 
-	Expired bool
+	expired atomic.Bool
 	timer   *time.Timer
 }
 
@@ -25,12 +26,16 @@ func (t *Deadline) Close() error {
 	return nil
 }
 
+func (t *Deadline) Expired() bool {
+	return t.expired.Load()
+}
+
 func (t *Deadline) Reset(d time.Duration) {
-	t.Expired = false
+	t.expired.Store(false)
 
 	t.Stop()
 	t.timer = time.AfterFunc(d, func() {
-		t.Expired = true
+		t.expired.Store(true)
 		t.C <- nil
 	})
 }
