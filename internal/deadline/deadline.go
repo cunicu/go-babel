@@ -36,7 +36,8 @@ func (t *Deadline) Reset(d time.Duration) {
 }
 
 func (t *Deadline) Stop() {
-	if t.timer != nil && !t.timer.Stop() {
-		<-t.timer.C
+	if t.timer != nil {
+		t.timer.Stop()
+		t.timer = nil
 	}
 }
