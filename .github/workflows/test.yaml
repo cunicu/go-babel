@@ -40,6 +40,7 @@ jobs:
           --randomize-suites
           --keep-going
           --cover
+          --coverpkg=./...
           --coverprofile=cover.profile
           --race
           --trace
@@ -48,3 +49,8 @@ jobs:
       env:
         # Pass token via environment variable to avoid GitHub API rate-limit
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Report test coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: cover.profile
