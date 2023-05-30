@@ -17,7 +17,7 @@ func SetupLogging() {
 	programLevel := &slog.LevelVar{}
 	programLevel.Set(slog.LevelDebug)
 
-	handler := slog.HandlerOptions{Level: programLevel}.NewTextHandler(os.Stdout)
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
 	logger := slog.New(handler)
 
 	slog.SetDefault(logger)
