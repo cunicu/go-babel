@@ -10,7 +10,7 @@ require (
 
 require (
 	github.com/onsi/ginkgo/v2 v2.10.0 // testing
-	github.com/onsi/gomega v1.27.7 // testing
+	github.com/onsi/gomega v1.27.8 // testing
 )
 
 require (
