@@ -6,7 +6,7 @@ package proto_test
 import (
 	"testing"
 
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/proto"
 )
 
 func FuzzParser(f *testing.F) {

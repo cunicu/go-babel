@@ -9,9 +9,9 @@ import (
 	"net"
 	"time"
 
-	netx "github.com/stv0g/go-babel/internal/net"
-	"github.com/stv0g/go-babel/internal/queue"
-	"github.com/stv0g/go-babel/proto"
+	netx "cunicu.li/go-babel/internal/net"
+	"cunicu.li/go-babel/internal/queue"
+	"cunicu.li/go-babel/proto"
 	"golang.org/x/exp/slog"
 )
 

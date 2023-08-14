@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
+	"cunicu.li/go-babel"
+	g "cunicu.li/gont/v2/pkg"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/stv0g/go-babel"
-	g "github.com/stv0g/gont/v2/pkg"
 	"golang.org/x/exp/slog"
 )
 

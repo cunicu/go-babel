@@ -10,7 +10,7 @@ import (
 	"net"
 	"net/netip"
 
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/proto"
 	"golang.org/x/exp/slog"
 	"golang.org/x/net/ipv6"
 )

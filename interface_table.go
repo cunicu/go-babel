@@ -3,7 +3,7 @@
 
 package babel
 
-import "github.com/stv0g/go-babel/internal/table"
+import "cunicu.li/go-babel/internal/table"
 
 type InterfaceTable table.Table[int, *Interface]
 

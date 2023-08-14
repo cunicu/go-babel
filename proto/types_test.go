@@ -4,9 +4,9 @@
 package proto_test
 
 import (
+	"cunicu.li/go-babel/proto"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/stv0g/go-babel/proto"
 )
 
 var _ = Context("Types", func() {

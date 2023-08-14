@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stv0g/go-babel/internal/deadline"
-	"github.com/stv0g/go-babel/internal/history"
-	netx "github.com/stv0g/go-babel/internal/net"
-	"github.com/stv0g/go-babel/internal/queue"
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/internal/deadline"
+	"cunicu.li/go-babel/internal/history"
+	netx "cunicu.li/go-babel/internal/net"
+	"cunicu.li/go-babel/internal/queue"
+	"cunicu.li/go-babel/proto"
 	"golang.org/x/exp/slog"
 )
 
