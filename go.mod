@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/stv0g/gont/v2 v2.3.6
-	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
+	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb
 	golang.org/x/net v0.14.0
 )
 
