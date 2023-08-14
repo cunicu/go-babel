@@ -4,10 +4,9 @@
 package proto
 
 import (
+	"log/slog"
 	"net/netip"
 	"time"
-
-	"golang.org/x/exp/slog"
 )
 
 // 4.6.6. IHU

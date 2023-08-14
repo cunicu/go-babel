@@ -4,9 +4,8 @@
 package proto
 
 import (
+	"log/slog"
 	"net/netip"
-
-	"golang.org/x/exp/slog"
 )
 
 // 4.6.11. Seqno Request

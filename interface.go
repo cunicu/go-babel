@@ -6,13 +6,13 @@ package babel
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"time"
 
 	netx "cunicu.li/go-babel/internal/net"
 	"cunicu.li/go-babel/internal/queue"
 	"cunicu.li/go-babel/proto"
-	"golang.org/x/exp/slog"
 )
 
 const (

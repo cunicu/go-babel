@@ -4,9 +4,8 @@
 package proto
 
 import (
+	"log/slog"
 	"time"
-
-	"golang.org/x/exp/slog"
 )
 
 // 4.6.5. Hello

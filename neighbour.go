@@ -4,6 +4,7 @@
 package babel
 
 import (
+	"log/slog"
 	"math"
 	"net"
 	"strings"
@@ -14,7 +15,6 @@ import (
 	netx "cunicu.li/go-babel/internal/net"
 	"cunicu.li/go-babel/internal/queue"
 	"cunicu.li/go-babel/proto"
-	"golang.org/x/exp/slog"
 )
 
 // 3.2.4. The Neighbour Table

@@ -3,7 +3,7 @@
 
 package proto
 
-import "golang.org/x/exp/slog"
+import "log/slog"
 
 const (
 	PacketHeaderMagic   = 42

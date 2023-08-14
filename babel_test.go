@@ -4,10 +4,9 @@
 package babel_test
 
 import (
+	"log/slog"
 	"os"
 	"testing"
-
-	"golang.org/x/exp/slog"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

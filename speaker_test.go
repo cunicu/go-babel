@@ -5,13 +5,13 @@ package babel_test
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 
 	"cunicu.li/go-babel"
 	g "cunicu.li/gont/v2/pkg"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"golang.org/x/exp/slog"
 )
 
 type mockNeighbourHandler struct {
