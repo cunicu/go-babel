@@ -6,9 +6,9 @@ package history_test
 import (
 	"testing"
 
+	"cunicu.li/go-babel/internal/history"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/stv0g/go-babel/internal/history"
 )
 
 func TestMain(t *testing.T) {

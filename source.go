@@ -6,7 +6,7 @@ package babel
 import (
 	"net/netip"
 
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/proto"
 )
 
 // 3.2.5. The Source Table

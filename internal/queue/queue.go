@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stv0g/go-babel/internal/deadline"
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/internal/deadline"
+	"cunicu.li/go-babel/proto"
 	"golang.org/x/exp/slog"
 )
 

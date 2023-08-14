@@ -5,8 +5,8 @@ package babel
 import (
 	"net/netip"
 
-	"github.com/stv0g/go-babel/internal/table"
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/internal/table"
+	"cunicu.li/go-babel/proto"
 )
 
 type sourceKey struct {

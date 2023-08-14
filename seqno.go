@@ -4,7 +4,7 @@
 package babel
 
 import (
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/proto"
 )
 
 // 3.2.7. The Table of Pending Seqno Requests

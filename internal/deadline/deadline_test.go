@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"cunicu.li/go-babel/internal/deadline"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/stv0g/go-babel/internal/deadline"
 )
 
 func TestMain(t *testing.T) {

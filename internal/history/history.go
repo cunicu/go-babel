@@ -8,7 +8,7 @@ import (
 	"math/bits"
 	"sync"
 
-	"github.com/stv0g/go-babel/proto"
+	"cunicu.li/go-babel/proto"
 )
 
 type HelloHistory struct {
