@@ -5,8 +5,7 @@ package proto
 
 import (
 	"encoding/hex"
-
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // 4.6.7. Router-Id

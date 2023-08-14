@@ -3,7 +3,7 @@
 
 package proto
 
-import "golang.org/x/exp/slog"
+import "log/slog"
 
 // 4.6.1. Pad1
 // https://datatracker.ietf.org/doc/html/rfc8966#section-4.6.1

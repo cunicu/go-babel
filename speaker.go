@@ -7,11 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"net/netip"
 
 	"cunicu.li/go-babel/proto"
-	"golang.org/x/exp/slog"
 	"golang.org/x/net/ipv6"
 )
 

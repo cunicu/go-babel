@@ -6,13 +6,13 @@ package queue
 import (
 	"container/list"
 	"io"
+	"log/slog"
 	"math/rand"
 	"sync"
 	"time"
 
 	"cunicu.li/go-babel/internal/deadline"
 	"cunicu.li/go-babel/proto"
-	"golang.org/x/exp/slog"
 )
 
 const (
