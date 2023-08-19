@@ -3,8 +3,8 @@
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cunicu/go-babel/test.yaml?style=flat-square)](https://github.com/cunicu/go-babel/actions)
 [![goreportcard](https://goreportcard.com/badge/github.com/cunicu/go-babel?style=flat-square)](https://goreportcard.com/report/github.com/cunicu/go-babel)
-[![Codecov branch](https://img.shields.io/codecov/c/github/cunicu/go-babel/master?style=flat-square&token=6XoWouQg6K)](https://app.codecov.io/gh/cunicu/go-babel/tree/master)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/cunicu/go-babel/blob/master/LICENSES/Apache-2.0.txt)
+[![Codecov branch](https://img.shields.io/codecov/c/github/cunicu/go-babel/main?style=flat-square&token=6XoWouQg6K)](https://app.codecov.io/gh/cunicu/go-babel/tree/main)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](https://github.com/cunicu/go-babel/blob/main/LICENSES/Apache-2.0.txt)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cunicu/go-babel?style=flat-square)
 [![Go Reference](https://pkg.go.dev/badge/github.com/cunicu/go-babel.svg)](https://pkg.go.dev/github.com/cunicu/go-babel)
 </div>
