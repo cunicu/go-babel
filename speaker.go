@@ -153,7 +153,7 @@ func (s *Speaker) runReadLoop() {
 		srcAddr := proto.AddressFrom(sAddr)
 		dstAddr, ok := netip.AddrFromSlice(cm.Dst)
 		if !ok {
-			s.logger.Error("Invalid destination address", nil)
+			s.logger.Error("Invalid destination address")
 			continue
 		}
 
