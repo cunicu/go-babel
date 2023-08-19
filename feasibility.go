@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+// SPDX-License-Identifier: Apache-2.0
+
 package babel
 
-import "github.com/stv0g/go-babel/proto"
+import "cunicu.li/go-babel/proto"
 
 type FeasibilityDistance struct {
 	SeqNo  proto.SequenceNumber
