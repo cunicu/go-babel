@@ -23,6 +23,7 @@ func (h *HelloHistory) Reset() {
 	defer h.mu.Unlock()
 
 	h.vector = 0
+	h.expectedSeqno = 0
 }
 
 func (h *HelloHistory) Empty() bool {
