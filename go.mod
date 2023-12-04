@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	github.com/onsi/ginkgo/v2 v2.13.1 // testing
+	github.com/onsi/ginkgo/v2 v2.13.2 // testing
 	github.com/onsi/gomega v1.30.0 // testing
 )
 
