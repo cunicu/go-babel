@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	github.com/onsi/ginkgo/v2 v2.13.2 // testing
+	github.com/onsi/ginkgo/v2 v2.14.0 // testing
 	github.com/onsi/gomega v1.30.0 // testing
 )
 
@@ -42,7 +42,7 @@ require (
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.15.0 // indirect
+	golang.org/x/tools v0.16.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.69 // indirect
