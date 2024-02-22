@@ -7,6 +7,6 @@ Files: go.mod go.sum */testdata/*
 Copyright: 2023 Steffen Vogel <post@steffenvogel.de>
 License: CC0-1.0
 
-Files: docs/go_babel_logo.svg
+Files: docs/go_babel_logo.svg .renovaterc.json
 Copyright: 2023 Steffen Vogel <post@steffenvogel.de>
 License: Apache-2.0

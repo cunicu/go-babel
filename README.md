@@ -44,7 +44,7 @@ go-babel aims at implementing the following RFCs and drafts:
 
 ## License
 
-go-babel is licenses under the Apache 2.0 license.
+go-babel is licensed under the [Apache 2.0](./LICENSE) license.
 
 - SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
 - SPDX-License-Identifier: Apache-2.0
