@@ -54,7 +54,7 @@
             ];
           };
 
-        formatter = nixpkgs.alejandra;
+        formatter = nixpkgs.nixfmt-rfc-style;
       }
     );
 }
