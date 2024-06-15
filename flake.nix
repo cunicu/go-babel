@@ -8,40 +8,44 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
-  outputs = {
-    self,
-    flake-utils,
-    nixpkgs,
-  }:
-    flake-utils.lib.eachDefaultSystem
-    (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in rec {
-        packages = rec {
-          default = go-babel;
-          go-babel = pkgs.buildGoModule {
-            name = "go-babel";
-            src = ./.;
-            vendorHash = "sha256-qp1wvKvHodeY0OO4hODQbqo+29RtO++Z4YgitY46b6o=";
-            buildInputs = with pkgs; [
-              libpcap
-            ];
-            doCheck = false;
-          };
+  outputs =
+    {
+      self,
+      flake-utils,
+      nixpkgs,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          inherit overlays;
         };
 
-        devShell = let
-          ginkgo =
-            pkgs.runCommand "ginkgo" {
-              HOME = "/build";
-              GOPATH = "/build";
-              GO111MODULE = "off";
-            } ''
-              ln -s ${packages.go-babel.goModules} /build/src
-              ${pkgs.go}/bin/go build -o $out/bin/ginkgo github.com/onsi/ginkgo/v2/ginkgo
-            '';
-        in
+        overlay = final: prev: { go-babel = final.callPackage ./default.nix { }; };
+        overlays = [ overlay ];
+      in
+      {
+        inherit overlays;
+
+        packages = {
+          default = pkgs.go-babel;
+        };
+
+        devShell =
+          let
+            ginkgo =
+              pkgs.runCommand "ginkgo"
+                {
+                  HOME = "/build";
+                  GOPATH = "/build";
+                  GO111MODULE = "off";
+                }
+                ''
+                  ln -s ${pkgs.go-babel.goModules} /build/src
+                  ${pkgs.go}/bin/go build -o $out/bin/ginkgo github.com/onsi/ginkgo/v2/ginkgo
+                '';
+          in
           pkgs.mkShell {
             packages = with pkgs; [
               golangci-lint
@@ -49,12 +53,12 @@
               ginkgo
             ];
 
-            inputsFrom = [
-              packages.go-babel
-            ];
+            inputsFrom = with pkgs; [ go-babel ];
+
+            hardeningDisable = [ "fortify" ];
           };
 
-        formatter = nixpkgs.alejandra;
+        formatter = pkgs.nixfmt-rfc-style;
       }
     );
 }
