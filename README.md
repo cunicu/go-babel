@@ -38,9 +38,9 @@ go-babel aims at implementing the following RFCs and drafts:
 - <https://www.youtube.com/watch?v=Mflw4BuksHQ>
 - <https://www.youtube.com/watch?v=1zMDLVln3XM>
 
-## Authors
+## Contact
 
-- Steffen Vogel ([@stv0g](https://github.com/stv0g))
+Please have a look at the contact page: [cunicu.li/docs/contact](https://cunicu.li/docs/contact).
 
 ## License
 
