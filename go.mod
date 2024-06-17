@@ -3,7 +3,7 @@ module cunicu.li/go-babel
 go 1.21
 
 require (
-	cunicu.li/gont/v2 v2.5.0
+	cunicu.li/gont/v2 v2.6.0
 	golang.org/x/net v0.26.0
 )
 
@@ -39,7 +39,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
+	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect

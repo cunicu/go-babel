@@ -14,6 +14,8 @@ cunicu.li/gont/v2 v2.4.2 h1:rYTGjqnqDe0EqV1UDWqIdWC1/rm9rYGWsNBdwI81qss=
 cunicu.li/gont/v2 v2.4.2/go.mod h1:fG565un6vHAJFhkRGCI1QH68uSQ/hq41fsvGAV9gpqE=
 cunicu.li/gont/v2 v2.5.0 h1:ebBGhTbftYMaBYyhWARwT6sJ2xJAaX5+bMLBbg78fAs=
 cunicu.li/gont/v2 v2.5.0/go.mod h1:qG/fwMshYN9PS3T7BzYCu4GLc6ZjBLplEf1lQooTG8c=
+cunicu.li/gont/v2 v2.6.0 h1:y6RkLAPjR2VoOpJh9qHtT5PX5lsG6pFvsesWHv40pyA=
+cunicu.li/gont/v2 v2.6.0/go.mod h1:2zuTbFC/yiahxBD9t8UBQYUAKLDLZeAuVeOzRkTQwCs=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
@@ -329,6 +331,8 @@ golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa h1:FRnLl4eNAQl8hwxVVC17teOw8
 golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa/go.mod h1:zk2irFbV9DP96SEBUUAy67IdHUaZuSnrz1n472HUCLE=
 golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f h1:99ci1mjWVBWwJiEKYY6jWa4d2nTQVIEhZIptnrVb1XY=
 golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f/go.mod h1:/lliqkxwWAhPjf5oSOIJup2XcqJaw8RGS6k3TGEc7GI=
+golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 h1:vr/HnozRka3pE4EsMEg1lgkXJkTFJCVUX+S/ZT6wYzM=
+golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842/go.mod h1:XtvwrStGgqGPLc4cjQfWqZHG1YFdYs6swckp8vpsjnc=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190802002840-cff245a6509b/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/lint v0.0.0-20181026193005-c67002cb31c3/go.mod h1:UVdnD1Gm6xHRNCYTkRU2/jEulfH38KcIWyp/GAMgvoE=
