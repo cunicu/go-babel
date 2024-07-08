@@ -18,6 +18,8 @@ cunicu.li/gont/v2 v2.6.0 h1:y6RkLAPjR2VoOpJh9qHtT5PX5lsG6pFvsesWHv40pyA=
 cunicu.li/gont/v2 v2.6.0/go.mod h1:2zuTbFC/yiahxBD9t8UBQYUAKLDLZeAuVeOzRkTQwCs=
 cunicu.li/gont/v2 v2.6.4 h1:r95+q/qRe30ULEIvc6soRmRlEYYhZMJALCDbMunRQBk=
 cunicu.li/gont/v2 v2.6.4/go.mod h1:CCNLnp0cvEXpAgIw0Oi9sweg3oUMkfkTFCprESTeVGA=
+cunicu.li/gont/v2 v2.6.5 h1:5gvaV+9JmG+OxwWmkVgmr7nm+2uCE5lEDEsr7P0Pj1k=
+cunicu.li/gont/v2 v2.6.5/go.mod h1:uVKBXT4p6AYqq8LNXoRltPg5IRoWL+Z6Uab2CAaorwg=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
@@ -66,6 +68,8 @@ github.com/fxamacker/cbor/v2 v2.5.0 h1:oHsG0V/Q6E/wqTS2O1Cozzsy69nqCiguo5Q1a1ADi
 github.com/fxamacker/cbor/v2 v2.5.0/go.mod h1:TA1xS00nchWmaBnEIxPSE5oHLuJBAVvqrtAnWBwBCVo=
 github.com/fxamacker/cbor/v2 v2.6.0 h1:sU6J2usfADwWlYDAFhZBQ6TnLFBHxgesMrQfQgk1tWA=
 github.com/fxamacker/cbor/v2 v2.6.0/go.mod h1:pxXPTn3joSm21Gbwsv0w9OSA2y1HFR9qXEeXQVeNoDQ=
+github.com/fxamacker/cbor/v2 v2.7.0 h1:iM5WgngdRBanHcxugY4JySA0nk1wZorNOpTgCMedv5E=
+github.com/fxamacker/cbor/v2 v2.7.0/go.mod h1:pxXPTn3joSm21Gbwsv0w9OSA2y1HFR9qXEeXQVeNoDQ=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-delve/delve v1.21.0 h1:npcc8TZhdVxaMSJon+zqcE3bXM/ck8SSOOWw/id13jI=
 github.com/go-delve/delve v1.21.0/go.mod h1:U+OAdfhewudkHsVs/AwhfpSBu7t/NgIXH3+my4T5q78=
