@@ -8,8 +8,8 @@ require (
 )
 
 require (
-	github.com/onsi/ginkgo/v2 v2.19.0 // testing
-	github.com/onsi/gomega v1.33.1 // testing
+	github.com/onsi/ginkgo/v2 v2.19.1 // testing
+	github.com/onsi/gomega v1.34.0 // testing
 )
 
 require (
@@ -17,7 +17,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-delve/delve v1.21.0 // indirect
-	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-ping/ping v1.1.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
