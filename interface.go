@@ -108,12 +108,12 @@ func (i *Interface) runTimers() {
 		select {
 		case <-i.periodicUpdateTimer.C:
 			if err := i.sendUpdate(); err != nil {
-				i.logger.Error("Failed to send periodic update", err)
+				i.logger.Error("Failed to send periodic update", slog.Any("error", err))
 			}
 
 		case <-i.helloMulticastTimer.C:
 			if err := i.sendMulticastHello(); err != nil {
-				i.logger.Error("Failed to send multicast hello", err)
+				i.logger.Error("Failed to send multicast hello", slog.Any("error", err))
 			}
 		}
 	}

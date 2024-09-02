@@ -75,7 +75,7 @@ func (q *Queue) SendIn(maxDelay time.Duration) {
 func (q *Queue) run() {
 	for range q.timer.C {
 		if err := q.send(); err != nil {
-			slog.Error("Failed to send packet", err)
+			slog.Error("Failed to send packet", slog.Any("error", err))
 		}
 	}
 }

@@ -146,7 +146,7 @@ func (s *Speaker) runReadLoop() {
 				return
 			}
 
-			s.logger.Error("Failed to read from socket", err)
+			s.logger.Error("Failed to read from socket", slog.Any("error", err))
 			continue
 		}
 
@@ -186,12 +186,12 @@ func (s *Speaker) runReadLoop() {
 
 		_, pkt, err := p.Packet(buf[:n])
 		if err != nil {
-			s.logger.Error("Failed to decode packet: %w", err)
+			s.logger.Error("Failed to decode packet: %w", slog.Any("error", err))
 			continue
 		}
 
 		if err := s.onPacket(pkt, cm.IfIndex, srcAddr, dstAddr); err != nil {
-			s.logger.Error("Failed to handle packet", err)
+			s.logger.Error("Failed to handle packet", slog.Any("error", err))
 			continue
 		}
 	}
