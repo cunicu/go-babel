@@ -2,16 +2,14 @@ module cunicu.li/go-babel
 
 go 1.22.5
 
-toolchain go1.23.0
-
 require (
 	cunicu.li/gont/v2 v2.6.13
 	golang.org/x/net v0.28.0
 )
 
 require (
-	github.com/onsi/ginkgo/v2 v2.20.1 // testing
-	github.com/onsi/gomega v1.34.1 // testing
+	github.com/onsi/ginkgo/v2 v2.20.2 // testing
+	github.com/onsi/gomega v1.34.2 // testing
 )
 
 require (
@@ -21,12 +19,11 @@ require (
 	github.com/go-delve/delve v1.21.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-ping/ping v1.1.0 // indirect
-	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-dap v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
+	github.com/google/pprof v0.0.0-20240829160300-da1f7e9f2b25 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gopacket/gopacket v1.2.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
