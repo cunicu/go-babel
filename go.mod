@@ -1,6 +1,8 @@
 module cunicu.li/go-babel
 
-go 1.21
+go 1.22
+
+toolchain go1.23.0
 
 require (
 	cunicu.li/gont/v2 v2.6.12
@@ -9,7 +11,7 @@ require (
 
 require (
 	github.com/onsi/ginkgo/v2 v2.20.1 // testing
-	github.com/onsi/gomega v1.34.1 // testing
+	github.com/onsi/gomega v1.34.2 // testing
 )
 
 require (
@@ -24,7 +26,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-dap v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
+	github.com/google/pprof v0.0.0-20240827171923-fa2c70bbbfe5 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gopacket/gopacket v1.2.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
