@@ -82,12 +82,12 @@ func (n *Neighbour) runTimers() {
 		select {
 		case <-n.helloTicker.C:
 			if err := n.sendUnicastHello(); err != nil {
-				n.logger.Error("Failed to send Hello", err)
+				n.logger.Error("Failed to send Hello", slog.Any("error", err))
 			}
 
 		case <-n.ihuTicker.C:
 			if err := n.sendIHU(); err != nil {
-				n.logger.Error("Failed to send IHU", err)
+				n.logger.Error("Failed to send IHU", slog.Any("error", err))
 			}
 
 		case <-n.ihuTimeout.C:
@@ -126,7 +126,7 @@ func (n *Neighbour) onSeqnoRequest(sr *proto.SeqnoRequest) {
 
 func (n *Neighbour) onAcknowledgmentRequest(ar *proto.AcknowledgmentRequest) {
 	if err := n.sendAcknowledgment(ar.Opaque, ar.Interval*3/5); err != nil {
-		n.logger.Error("Failed to send acknowledgement", err)
+		n.logger.Error("Failed to send acknowledgement", slog.Any("error", err))
 	}
 }
 
