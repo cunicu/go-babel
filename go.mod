@@ -1,9 +1,11 @@
 module cunicu.li/go-babel
 
-go 1.22.5
+go 1.23.0
+
+toolchain go1.23.1
 
 require (
-	cunicu.li/gont/v2 v2.6.13
+	cunicu.li/gont/v2 v2.6.14
 	golang.org/x/net v0.29.0
 )
 
@@ -25,7 +27,7 @@ require (
 	github.com/google/nftables v0.2.0 // indirect
 	github.com/google/pprof v0.0.0-20240829160300-da1f7e9f2b25 // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/gopacket/gopacket v1.2.0 // indirect
+	github.com/gopacket/gopacket v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
