@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.1
 
 require (
-	cunicu.li/gont/v2 v2.6.14
+	cunicu.li/gont/v2 v2.6.17
 	golang.org/x/net v0.29.0
 )
 
@@ -40,7 +40,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948 // indirect
+	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
