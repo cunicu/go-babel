@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/onsi/ginkgo/v2 v2.21.0 // testing
-	github.com/onsi/gomega v1.34.2 // testing
+	github.com/onsi/gomega v1.35.1 // testing
 )
 
 require (
