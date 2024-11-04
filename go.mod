@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	github.com/onsi/ginkgo/v2 v2.20.2 // testing
+	github.com/onsi/ginkgo/v2 v2.21.0 // testing
 	github.com/onsi/gomega v1.34.2 // testing
 )
 
@@ -25,7 +25,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-dap v0.9.1 // indirect
 	github.com/google/nftables v0.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240829160300-da1f7e9f2b25 // indirect
+	github.com/google/pprof v0.0.0-20241029153458-d1b30febd7db // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gopacket/gopacket v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
