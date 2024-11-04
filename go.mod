@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.2
 
 require (
-	cunicu.li/gont/v2 v2.8.2
+	cunicu.li/gont/v2 v2.9.2
 	golang.org/x/net v0.30.0
 )
 
@@ -47,6 +47,6 @@ require (
 	golang.org/x/tools v0.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	kernel.org/pub/linux/libs/security/libcap/cap v1.2.70 // indirect
-	kernel.org/pub/linux/libs/security/libcap/psx v1.2.70 // indirect
+	kernel.org/pub/linux/libs/security/libcap/cap v1.2.71 // indirect
+	kernel.org/pub/linux/libs/security/libcap/psx v1.2.71 // indirect
 )
