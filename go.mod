@@ -6,12 +6,12 @@ toolchain go1.23.4
 
 require (
 	cunicu.li/gont/v2 v2.11.3
-	golang.org/x/net v0.32.0
+	golang.org/x/net v0.33.0
 )
 
 require (
 	github.com/onsi/ginkgo/v2 v2.22.1 // testing
-	github.com/onsi/gomega v1.36.1 // testing
+	github.com/onsi/gomega v1.36.2 // testing
 )
 
 require (
