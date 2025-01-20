@@ -2,7 +2,7 @@ module cunicu.li/go-babel
 
 go 1.23.0
 
-toolchain go1.23.4
+toolchain go1.23.5
 
 require (
 	cunicu.li/gont/v2 v2.11.9
