@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.5
 
 require (
-	cunicu.li/gont/v2 v2.11.9
+	cunicu.li/gont/v2 v2.11.10
 	golang.org/x/net v0.34.0
 )
 
@@ -35,7 +35,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
 	github.com/mdlayher/socket v0.5.0 // indirect
-	github.com/prometheus-community/pro-bing v0.5.0 // indirect
+	github.com/prometheus-community/pro-bing v0.6.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
