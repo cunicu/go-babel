@@ -40,6 +40,8 @@ cunicu.li/gont/v2 v2.11.5 h1:M/Zz2IMclSFqXSGdD63QB4xGW5VlwnzShBdUP9KGRbc=
 cunicu.li/gont/v2 v2.11.5/go.mod h1:nXDsyE0KMtofJUDhR+Y0PT0cU0BMCc5VoVLz4fKMCOY=
 cunicu.li/gont/v2 v2.11.9 h1:dflwnttvIY9yd24FBF4SLQxcPJEahKX3tuZJt5w84eY=
 cunicu.li/gont/v2 v2.11.9/go.mod h1:q0N9itoYJ4Md3BL1zivJh9jNF/I0a2rhUyEQJDJscsA=
+cunicu.li/gont/v2 v2.11.10 h1:SKeIzm8hyws5Li11Dw7p0Jq3WF4m9Nm4GUs3niqPgRY=
+cunicu.li/gont/v2 v2.11.10/go.mod h1:47iLVcetvVxbdCRVDXyO6Ahh/WJJ74XeAUA4TcBh/wc=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
@@ -278,6 +280,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
 github.com/prometheus-community/pro-bing v0.5.0 h1:Fq+4BUXKIvsPtXUY8K+04ud9dkAuFozqGmRAyNUpffY=
 github.com/prometheus-community/pro-bing v0.5.0/go.mod h1:1joR9oXdMEAcAJJvhs+8vNDvTg5thfAZcRFhcUozG2g=
+github.com/prometheus-community/pro-bing v0.6.0 h1:04SZ/092gONTE1XUFzYFWqgB4mKwcdkqNChLMFedwhg=
+github.com/prometheus-community/pro-bing v0.6.0/go.mod h1:jNCOI3D7pmTCeaoF41cNS6uaxeFY/Gmc3ffwbuJVzAQ=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3/go.mod h1:/TN21ttK/J9q6uSwhBd54HahCDft0ttaMvbicHlPoso=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
