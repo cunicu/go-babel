@@ -4,7 +4,7 @@
 buildGo123Module {
   name = "go-babel";
   src = ./.;
-  vendorHash = "sha256-f/afNk6l8NbdwjLxVUOzmp6TFzv9AsVjEEW9RcLVmEY=";
+  vendorHash = "sha256-IMEwQMhqMqOQ3+OM/Wp1qAIQYVoSuXLj4nqW5k6xGBY=";
   buildInputs = [ libpcap ];
   doCheck = false;
 }
