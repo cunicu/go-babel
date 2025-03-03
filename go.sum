@@ -1,5 +1,7 @@
 cunicu.li/gont/v2 v2.11.12 h1:hH7ibcJxHS9KkRj/xvCKvURxp4c43KLUvbqseSeEmCA=
 cunicu.li/gont/v2 v2.11.12/go.mod h1:2F6L4NcH25FbaxQZvaejIVDUHFj4Nl6mMyGKKnh7Srk=
+cunicu.li/gont/v2 v2.11.14 h1:3LIwUdQ7dXRWmTH81wbjmewEsOyLjfgPo/j5fnAe8ig=
+cunicu.li/gont/v2 v2.11.14/go.mod h1:Zs2/+YBoopsyhy4uT/pJPCFsSU6V9WbqKaxcqo2gCwQ=
 github.com/cilium/ebpf v0.17.3 h1:FnP4r16PWYSE4ux6zN+//jMcW4nMVRvuTLVTvCjyyjg=
 github.com/cilium/ebpf v0.17.3/go.mod h1:G5EDHij8yiLzaqn0WjyfJHvRa+3aDlReIaLVRMvOyJk=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
