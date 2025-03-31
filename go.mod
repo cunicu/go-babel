@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	cunicu.li/gont/v2 v2.11.20
-	golang.org/x/net v0.37.0
+	golang.org/x/net v0.38.0
 )
 
 require (
