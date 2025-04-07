@@ -8,6 +8,8 @@ cunicu.li/gont/v2 v2.11.18 h1:Ob+zrGCXpCCdF/mIULSViuyui8olGJx97MpzkSkMCx0=
 cunicu.li/gont/v2 v2.11.18/go.mod h1:2vunelzXbUJtejmwGhv4ABqe27iMihTUGlziMOos5po=
 cunicu.li/gont/v2 v2.11.20 h1:k88IX56AYP0u7E5xGcHsX2j2HSsyMcmuEu7ND+aZvxk=
 cunicu.li/gont/v2 v2.11.20/go.mod h1:HatZkBPVWGOErNGYk3rePFI4HhH3h080K6jTY77qirU=
+cunicu.li/gont/v2 v2.11.22 h1:HKsDorbCQ+6FAQxJSB+s7FtAQdPisti0jyCObzC6MC0=
+cunicu.li/gont/v2 v2.11.22/go.mod h1:eDyCkpqdbt0yJroU8uTbDxfZuDPKKB+12SVUadxSNR8=
 github.com/cilium/ebpf v0.17.3 h1:FnP4r16PWYSE4ux6zN+//jMcW4nMVRvuTLVTvCjyyjg=
 github.com/cilium/ebpf v0.17.3/go.mod h1:G5EDHij8yiLzaqn0WjyfJHvRa+3aDlReIaLVRMvOyJk=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
@@ -19,6 +21,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fxamacker/cbor/v2 v2.7.0 h1:iM5WgngdRBanHcxugY4JySA0nk1wZorNOpTgCMedv5E=
 github.com/fxamacker/cbor/v2 v2.7.0/go.mod h1:pxXPTn3joSm21Gbwsv0w9OSA2y1HFR9qXEeXQVeNoDQ=
+github.com/fxamacker/cbor/v2 v2.8.0 h1:fFtUGXUzXPHTIUdne5+zzMPTfffl3RD5qYnkY40vtxU=
+github.com/fxamacker/cbor/v2 v2.8.0/go.mod h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=
 github.com/go-delve/delve v1.24.0 h1:M1auuI7kyfXZm5LMDQEqhqr4koKWOzGKhCgwMxsLQfo=
 github.com/go-delve/delve v1.24.0/go.mod h1:yNWXOuo4yslMOOj7O8gIRrf/trDBrFy5ZXwJL4ZzOos=
 github.com/go-delve/delve v1.24.1 h1:RjR/fbsxsPFpvFl3cGtQbM8asNrKEiG9mVp4RtU+tnE=
