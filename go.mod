@@ -1,11 +1,11 @@
 module cunicu.li/go-babel
 
-go 1.23.0
+go 1.24.1
 
 toolchain go1.24.2
 
 require (
-	cunicu.li/gont/v2 v2.11.23
+	cunicu.li/gont/v2 v2.12.1
 	golang.org/x/net v0.39.0
 )
 
@@ -19,7 +19,7 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
-	github.com/go-delve/delve v1.24.1 // indirect
+	github.com/go-delve/delve v1.24.2 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
