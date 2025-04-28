@@ -5,7 +5,7 @@ go 1.24.1
 toolchain go1.24.2
 
 require (
-	cunicu.li/gont/v2 v2.12.1
+	cunicu.li/gont/v2 v2.12.3
 	golang.org/x/net v0.39.0
 )
 
@@ -33,7 +33,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mdlayher/netlink v1.7.3-0.20250113171957-fbb4dce95f42 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
-	github.com/prometheus-community/pro-bing v0.6.1 // indirect
+	github.com/prometheus-community/pro-bing v0.7.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
@@ -48,6 +48,6 @@ require (
 	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/tools v0.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	kernel.org/pub/linux/libs/security/libcap/cap v1.2.75 // indirect
-	kernel.org/pub/linux/libs/security/libcap/psx v1.2.75 // indirect
+	kernel.org/pub/linux/libs/security/libcap/cap v1.2.76 // indirect
+	kernel.org/pub/linux/libs/security/libcap/psx v1.2.76 // indirect
 )
