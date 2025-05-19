@@ -5,7 +5,7 @@ go 1.24.1
 toolchain go1.24.3
 
 require (
-	cunicu.li/gont/v2 v2.12.4
+	cunicu.li/gont/v2 v2.12.6
 	golang.org/x/net v0.40.0
 )
 
@@ -35,7 +35,7 @@ require (
 	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/prometheus-community/pro-bing v0.7.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/vishvananda/netlink v1.3.0 // indirect
+	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
