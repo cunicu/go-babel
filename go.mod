@@ -5,7 +5,7 @@ go 1.24.1
 toolchain go1.24.3
 
 require (
-	cunicu.li/gont/v2 v2.12.6
+	cunicu.li/gont/v2 v2.12.7
 	golang.org/x/net v0.40.0
 )
 
