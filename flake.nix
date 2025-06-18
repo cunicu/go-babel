@@ -32,31 +32,17 @@
           default = pkgs.go-babel;
         };
 
-        devShell =
-          let
-            ginkgo =
-              pkgs.runCommand "ginkgo"
-                {
-                  HOME = "/build";
-                  GOPATH = "/build";
-                  GO111MODULE = "off";
-                }
-                ''
-                  ln -s ${pkgs.go-babel.goModules} /build/src
-                  ${pkgs.go}/bin/go build -o $out/bin/ginkgo github.com/onsi/ginkgo/v2/ginkgo
-                '';
-          in
-          pkgs.mkShell {
-            packages = with pkgs; [
-              golangci-lint
-              reuse
-              ginkgo
-            ];
+        devShell = pkgs.mkShell {
+          packages = with pkgs; [
+            golangci-lint
+            reuse
+            ginkgo
+          ];
 
-            inputsFrom = with pkgs; [ go-babel ];
+          inputsFrom = with pkgs; [ go-babel ];
 
-            hardeningDisable = [ "fortify" ];
-          };
+          hardeningDisable = [ "fortify" ];
+        };
 
         formatter = pkgs.nixfmt-rfc-style;
       }
