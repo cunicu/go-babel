@@ -25,8 +25,8 @@ go-babel aims at implementing the following RFCs and drafts:
 - [**RFC 9079:** Source-Specific Routing in the Babel Routing Protocol](https://datatracker.ietf.org/doc/rfc9079/)
 - [**RFC 8967:** MAC Authentication for the Babel Routing Protocol](https://datatracker.ietf.org/doc/rfc8967/)
 - [**RFC 8968:** Babel Routing Protocol over Datagram Transport Layer Security](https://datatracker.ietf.org/doc/rfc8968/)
-- [**draft-ietf-babel-mac-relaxed-04:** Relaxed Packet Counter Verification for Babel MAC Authentication](https://datatracker.ietf.org/doc/draft-ietf-babel-mac-relaxed/)
-- [**draft-ietf-babel-rtt-extension:** Delay-based Metric Extension for the Babel Routing Protocol](https://datatracker.ietf.org/doc/draft-ietf-babel-rtt-extension/)
+- [**RFC 9467:** Relaxed Packet Counter Verification for Babel MAC Authentication](https://datatracker.ietf.org/doc/rfc9467/)
+- [**RFC 9616:** Delay-based Metric Extension for the Babel Routing Protocol](https://datatracker.ietf.org/doc/html/rfc9616/)
 
 ## Limitations
 
