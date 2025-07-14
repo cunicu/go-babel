@@ -6,7 +6,7 @@ toolchain go1.24.4
 
 require (
 	cunicu.li/gont/v2 v2.12.12
-	golang.org/x/net v0.41.0
+	golang.org/x/net v0.42.0
 )
 
 require (
@@ -42,11 +42,11 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/arch v0.14.0 // indirect
-	golang.org/x/sync v0.15.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/telemetry v0.0.0-20241106142447-58a1122356f5 // indirect
-	golang.org/x/text v0.26.0 // indirect
-	golang.org/x/tools v0.33.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
+	golang.org/x/tools v0.34.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.76 // indirect
 	kernel.org/pub/linux/libs/security/libcap/psx v1.2.76 // indirect
