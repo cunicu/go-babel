@@ -5,7 +5,7 @@ go 1.24.1
 toolchain go1.24.5
 
 require (
-	cunicu.li/gont/v2 v2.12.16
+	cunicu.li/gont/v2 v2.12.19
 	golang.org/x/net v0.43.0
 )
 
@@ -17,7 +17,7 @@ require (
 require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/cilium/ebpf v0.17.3 // indirect
-	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
+	github.com/coreos/go-systemd/v22 v22.6.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/go-delve/delve v1.25.1 // indirect
